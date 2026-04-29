@@ -31,3 +31,4 @@ evaluation/ablations/held_out_traces.jsonl
 *.log
 outputs/
 .tmp/
+docs/challenge/
