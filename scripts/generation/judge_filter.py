@@ -237,18 +237,20 @@ def call_judge(client: OpenAI, prompt: str, retries: int = 3) -> dict:
 # Main
 # ---------------------------------------------------------------------------
 
-def main(dry_run: bool = False) -> None:
+def main(dry_run: bool = False, input_file: str | None = None) -> None:
     import jsonschema
 
     schema = json.loads(SCHEMA_PATH.read_text(encoding="utf-8"))
 
+    target = Path(input_file) if input_file else INPUT_FILE
+
     tasks: list[dict] = []
-    for line in INPUT_FILE.read_text(encoding="utf-8").splitlines():
+    for line in target.read_text(encoding="utf-8").splitlines():
         line = line.strip()
         if line:
             tasks.append(json.loads(line))
 
-    print(f"Loaded {len(tasks)} tasks from {INPUT_FILE.name}")
+    print(f"Loaded {len(tasks)} tasks from {target}")
     print(f"Judge model : {JUDGE_MODEL}")
     print(f"Pass threshold : all dims >= {PASS_THRESHOLD}")
     print(f"Dry run : {dry_run}\n")
@@ -318,7 +320,7 @@ def main(dry_run: bool = False) -> None:
     # ------------------------------------------------------------------
     # Write back in-place
     # ------------------------------------------------------------------
-    with INPUT_FILE.open("w", encoding="utf-8") as fh:
+    with target.open("w", encoding="utf-8") as fh:
         for t in enriched:
             fh.write(json.dumps(t, ensure_ascii=False) + "\n")
 
@@ -371,12 +373,14 @@ def main(dry_run: bool = False) -> None:
             diff_dist[d] = diff_dist.get(d, 0) + 1
         print(f"Difficulty distribution (dry run) : {diff_dist}")
 
-    print(f"\nOutput -> {INPUT_FILE}")
+    print(f"\nOutput -> {target}")
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--dry-run", action="store_true",
                         help="Assign difficulty labels only; skip LLM judge calls")
+    parser.add_argument("--input-file", default=None,
+                        help="Path to a .jsonl file to judge-filter (default: trace_derived_batch1.jsonl)")
     args = parser.parse_args()
-    main(dry_run=args.dry_run)
+    main(dry_run=args.dry_run, input_file=args.input_file)
