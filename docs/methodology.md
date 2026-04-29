@@ -76,3 +76,33 @@ does not fit in $10 compute envelope.
 
 Path B. Committed 2026-04-29. Primary failure modes targeted: ICP misclassification and
 signal over-claiming. Backbone: Qwen 3.5 0.8B. Training method: SimPO via Unsloth.
+
+---
+
+## Model Rotation Policy (Act II Dataset Authoring)
+
+To prevent preference leakage — where the model used to generate tasks scores favorably under the judge because they share the same biases — generation and quality filtering use separate model families wherever possible.
+
+### Rotation Table
+
+| Authoring Mode | Generation Model | Judge Model | Same Family? |
+| --- | --- | --- | --- |
+| Trace-derived (batch 1) | Google Gemini (free tier) | DeepSeek V3.2 | **No** ✓ |
+| Programmatic templates | None (deterministic) | DeepSeek V3.2 | N/A ✓ |
+| Adversarial hand-authored | None (human-written) | DeepSeek V3.2 | N/A ✓ |
+| Synthetic semantic edge cases | DeepSeek V3.2 | DeepSeek V3.2 | Yes* |
+
+*For synthetic semantic edge cases, the same model family is used for generation and filtering because the judge scores **email quality** (instruction compliance, grounded truth value, rubric alignment confidence) — not semantic correctness. The semantic incorrectness is verified by construction (the brief explicitly encodes the intended failure type). An adversary cannot "game" the judge by generating semantically wrong emails that the judge scores as high-quality, because the judge is evaluating different dimensions than the intended failure.
+
+### What Preference Leakage Means Here
+
+If the generation model and judge model are identical, the generator may learn stylistic patterns that the judge rewards regardless of rubric compliance. This is the preference leakage risk. It is mitigated by:
+
+1. **Cross-family rotation** for the largest batches (trace-derived, where prose quality is most variable).
+2. **Deterministic generation** for programmatic tasks (no LLM, no leakage possible).
+3. **Human authorship** for adversarial tasks (no LLM generation bias).
+4. **Structural separation** for synthetic tasks: the judge evaluates surface quality; the semantic failure is embedded in the brief structure, not in how the email is written.
+
+### Claude API Exclusion
+
+Claude Sonnet 4.6 and GPT-class models are excluded from all generation and judging stages per the cost rules in §Cost Rules above. All LLM calls in the pipeline use DeepSeek V3.2 via OpenRouter (dev-tier pricing) or Google Gemini (free tier).
