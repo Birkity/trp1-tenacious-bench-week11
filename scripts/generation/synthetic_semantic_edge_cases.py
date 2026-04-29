@@ -163,32 +163,42 @@ You are generating adversarial benchmark tasks for Tenacious-Bench semantic edge
 Your goal is to produce emails that PASS all programmatic checks (D1–D5)
 but are still semantically incorrect when compared to the hiring brief.
 
-This means:
-- All numbers in the email must appear in the brief (D1 pass)
-- Pitch frame must appear to match the ICP segment (D2 superficial pass)
-- Tone must avoid all banned phrases (D4 pass)
-- Word count <= 120 and no booking links (D5 pass)
+STRICT FORMAT RULES (all must hold or the task is rejected):
+- Subject line MUST start with one of these exact prefixes (case-insensitive):
+  "Context: " OR "Note on " OR "Congrats on " OR "Question on "
+- Subject line must be <= 60 characters total
+- Email body must be <= 120 words
+- Body must contain NO URLs (no http://, https://, cal.com)
+- Body must contain EXACTLY ONE question mark (?)
+- Body must NOT contain the word "bench" (in any form)
+- Body must NOT contain meeting phrases: "schedule a", "book a", "15 minutes", "book time"
+- Body must NOT contain banned phrases: "top talent", "world-class", "rockstar",
+  "hope this finds", "falling behind", "quick ", "just "
 
-But the email must make an inference or claim that the brief does NOT justify.
+RUBRIC RULES (email must PASS these):
+- All numbers/dates in the email must appear verbatim in the brief JSON above (D1 pass)
+- Tone must avoid all banned phrases listed above (D4 pass)
+- Word count <= 120 (D5 pass)
 
-Examples of semantic failures:
-- Inferring a scaling bottleneck from +10% growth (too weak evidence)
-- Claiming AI maturity from a single ML job post
-- Claiming capability gaps when gaps[] is empty
-- Overstating confidence when brief confidence = 0.5
-- Turning ambiguous signals into strong claims
+BUT the email must make an unjustified inference:
+{semantic_instructions}
 
-Specific instruction for this task:
-- {semantic_instructions}
+Examples of valid subject prefixes:
+  "Context: hiring signal at Acme Corp"
+  "Note on engineering priorities at Acme Corp"
+  "Congrats on recent growth at Acme Corp"
+  "Question on AI roadmap at Acme Corp"
 
-Use this brief JSON exactly (do not edit values):
+Use this brief JSON exactly (do not edit any values):
 {brief_json}
 
-Output JSON with:
-- brief_json (exactly as provided)
-- email_subject
-- email_body
-- explanation_of_why_this_is_semantically_wrong
+Output ONLY a JSON object with these four keys:
+{{
+  "brief_json": <the brief dict above, verbatim>,
+  "email_subject": <subject starting with one of the approved prefixes, <= 60 chars>,
+  "email_body": <body, <= 120 words, exactly 1 ?, no URLs, no banned words>,
+  "explanation_of_why_this_is_semantically_wrong": <one sentence explaining the unjustified claim>
+}}
 """.strip()
 
 
@@ -276,6 +286,31 @@ def make_task(task_id: str, brief: dict[str, Any], email: dict[str, Any]) -> dic
                 "tone_compliance",
                 "format_compliance",
             ],
+            "negative_velocity_threshold_pct": -20.0,
+            "max_subject_chars": 60,
+            "max_body_words": 120,
+            "approved_subject_prefixes": ["context:", "note on", "congrats on", "question on"],
+            "banned_phrases": [
+                "top talent", "world-class", "a-players", "rockstar", "ninja",
+                "aggressive hiring", "cost savings of", "guaranteed roi",
+                "proven track record", "falling behind", "you're behind",
+                "you lack", "you're missing", "you need to catch up", "left behind",
+                "hope this finds", "hey there", "quick ", "just ",
+            ],
+            "growth_frame_terms": [
+                "bottleneck", "bottlenecks", "scaling", "scale your",
+                "accelerate", "accelerating", "rapid growth", "increased demand",
+                "augment your team", "augment existing", "expand the team", "staff up",
+            ],
+            "product_claim_terms": [
+                "tenacious can", "tenacious provides", "tenacious offers",
+                "we can", "we provide", "our engineers", "available on-demand",
+                "pre-vetted", "project-ready", "augment your", "deploy in days",
+            ],
+            "icp_pitch_alignment_policy": (
+                "Later LLM judge checks whether the primary pitch frame matches the brief ICP segment. "
+                "Phase 1 only fast-fails Ambiguous plus product claim."
+            ),
         },
     }
 

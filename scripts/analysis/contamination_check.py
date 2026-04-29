@@ -34,14 +34,24 @@ HELD_OUT_FILE = DATA_DIR / "held_out" / "tasks.jsonl"
 
 
 def _task_input_text(task: dict) -> str:
+    """
+    Build a per-task fingerprint from the unique signal-bearing content only.
+
+    Excludes email body and grounding_facts because:
+    - Template-based tasks (programmatic, adversarial) share boilerplate phrases
+      ("Companies scaling post-funding often need engineers faster than traditional hiring.",
+       "Tenacious provides pre-vetted ML engineers deployable in days.", etc.)
+    - These shared phrases would trigger false positives in n-gram and cosine checks.
+
+    The unique content per task is: company name + ICP segment + hiring velocity
+    observation (contains company name + specific percentage + timeframe) + subject.
+    """
     brief = task.get("brief", {})
     parts = [
         brief.get("company", ""),
         brief.get("icp_segment", ""),
         brief.get("hiring_velocity", {}).get("observation", ""),
-        " ".join(brief.get("grounding_facts", [])),
         task.get("email", {}).get("subject", ""),
-        task.get("email", {}).get("body", ""),
     ]
     return " ".join(p for p in parts if p).lower()
 

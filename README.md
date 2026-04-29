@@ -1,117 +1,158 @@
-﻿# Tenacious-Bench Week 11
+# Tenacious-Bench v0.1
 
-Machine-verifiable sales-agent evaluation benchmark for Tenacious-Bench v0.1, built from Week 10 Conversion Engine traces, probes, and Week 11 audit/schema/scoring design.
+Machine-verifiable evaluation benchmark for B2B sales-agent quality. Built from Week 10
+Conversion Engine traces, probe failures, and Week 11 audit/schema/scoring design.
 
-GitHub: https://github.com/Birkity/trp1-tenacious-bench-week11
+**Acts I & II complete.** 250 tasks, four authoring modes, three partitions sealed.
 
-## Short Week 11 Challenge Description
+---
 
-Week 11 turns the Week 10 Conversion Engine into a domain-specific evaluation system. Instead of re-running tau2-Bench retail, this repo designs Tenacious-Bench: a benchmark for B2B sales-agent quality focused on grounding fidelity, ICP-pitch alignment, signal directionality, tone compliance, and format compliance. The benchmark is built from private local source material, Week 10 traces, probe failures, and Tenacious sales rules, then used to construct datasets and train a small judge/critic in later phases.
+## Status (as of 2026-04-30)
+
+| Item | Status |
+|------|--------|
+| Act I — Audit & Schema | Complete |
+| Act II — Dataset (250 tasks) | Complete |
+| Partitions (train/dev/held_out) | Sealed (seed=42) |
+| Contamination check | Run (time-shift PASS; see notes in `data/contamination_check.json`) |
+| Inter-rater agreement | Complete (min 97%, κ≥0.92) |
+| Datasheet | Complete (`docs/datasheet.md`) |
+| Act III — Preference pairs + SimPO training | Days 5–6 |
+| Act IV — Held-out evaluation | Day 6–7 |
+
+---
 
 ## Repository Layout
 
-```text
-benchmark/                  Schema, dimensions, and runnable scoring evaluator
-docs/                       Audit memo, methodology, architecture, cost log, reading memos
-docs/challenge/             Local Week 11 challenge doc + style guide + examples
-evidence/                   Selected Week 10 traces, probes, generated emails, tau2 references
-scripts/generation/         Dataset construction scripts (trace-derived + programmatic)
-data/tenacious_bench_v0.1/  Train/dev/held-out benchmark partitions (in progress)
-training_data/              Preference data for Path B judge training
-evaluation/ablations/       Evaluation and ablation outputs
-tests/                      Future tests for schema and evaluator behavior
+```
+benchmark/
+  schema.json                     Task JSON schema (v0.1)
+  dimensions.md                   Full rubric specification
+  scoring_evaluator.py            Deterministic scorer — no LLM, no temperature
+
+data/
+  contamination_check.json        3-check contamination audit output
+  tenacious_bench_v0.1/
+    dev/
+      trace_derived_batch1.jsonl  (75 tasks — from Week 10 company events)
+      programmatic_batch1.jsonl   (75 tasks — deterministic templates)
+      adversarial_hand_batch1.jsonl (40 tasks — hand-authored edge cases)
+    dev_synthetic/
+      semantic_edge_cases_batch1.jsonl (60 tasks — LLM-generated Phase 2 probes)
+    train/tasks.jsonl             (123 tasks, 50% — preference pair source)
+    dev/tasks.jsonl               (83 tasks, 30% — public eval)
+    held_out/tasks.jsonl          (44 tasks, 20% — SEALED, gitignored)
+
+docs/
+  audit_memo.md                   Why Tenacious-Bench is needed (Week 10 evidence)
+  methodology.md                  Path B justification + model rotation policy
+  datasheet.md                    Gebru + Pushkarna template (3–5 pages)
+  inter_rater_agreement.md        30-task human calibration study
+  cost_log.md                     API and compute charges
+  architecture.md                 Six-layer system overview
+
+scripts/
+  generation/
+    trace_derived.py              Batch 1 generation (trace-derived)
+    programmatic_templates.py     Batch 2 (fully deterministic, no API)
+    adversarial_hand.py           Batch 3 (hand-authored)
+    synthetic_semantic_edge_cases.py  Batch 4 (DeepSeek V3.2 via OpenRouter)
+    judge_filter.py               LLM quality gate (DeepSeek V3.2)
+    partition.py                  Family-aware 50/30/20 split (seed=42)
+  analysis/
+    contamination_check.py        N-gram + embedding + time-shift audit
+
+synthesis_memos/
+  memo_datasheets_for_datasets.md   Common reading: Gebru et al. (2018)
+  memo_data_cards.md                Common reading: Pushkarna et al. (2022)
+
+report/
+  interim_report.tex              LaTeX interim report (Acts I & II)
 ```
 
-## Quick Start
+---
 
-```powershell
+## Setup
+
+```bash
 python -m venv .venv
+# Windows:
 .\.venv\Scripts\Activate.ps1
+# macOS/Linux:
+source .venv/bin/activate
+
 pip install -r requirements.txt
-python benchmark\scoring_evaluator.py
 ```
 
-The evaluator should run three local dummy tasks and return one `PASS` plus two `REJECT` verdicts.
+Requires `OPENROUTER_API_KEY` in `.env` for generation and judge-filter scripts.
 
-## Act II (Dataset Authoring) — Current Outputs
+---
 
-Dev batch files (JSONL tasks) live in:
+## Quick Verification
 
-- data/tenacious_bench_v0.1/dev/trace_derived_batch1.jsonl (75 tasks)
-- data/tenacious_bench_v0.1/dev/programmatic_batch1.jsonl (75 tasks)
+```bash
+# 1. Run the deterministic scorer on a task
+python benchmark/scoring_evaluator.py
 
-Semantic edge cases are written to a staging folder:
+# 2. Check partition integrity
+python -c "
+import json
+for p in ['train','dev','held_out']:
+    tasks = [json.loads(l) for l in open(f'data/tenacious_bench_v0.1/{p}/tasks.jsonl')]
+    print(f'{p}: {len(tasks)} tasks')
+"
 
-- data/tenacious_bench_v0.1/dev_synthetic/semantic_edge_cases_batch1.jsonl (60 tasks)
-
-Naming/structure convention used in this repo:
-
-- Dataset partitions are only: data/tenacious_bench_v0.1/{train,dev,held_out}/
-- Within a partition, files follow: <source>_<purpose>_batch<N>.jsonl
-	- Example: semantic_edge_cases_batch1.jsonl
-	- Reason: avoids creating extra pseudo-partitions
-
-### Regenerate Batch 2 (Programmatic, deterministic)
-
-This does not require any API keys.
-
-```powershell
-python scripts/generation/programmatic_templates.py
-```
-
-### Generate Semantic Edge Cases (LLM + evaluator sieve)
-
-This uses a small dev-tier model on OpenRouter and keeps only tasks that
-PASS the deterministic evaluator but are semantically wrong.
-
-```powershell
-python scripts/generation/synthetic_semantic_edge_cases.py --target 60
-```
-
-### Run judge-filter (adds judge_filter + difficulty)
-
-This requires an OpenRouter key in `OPENROUTER_API_KEY` (see `.env.example`).
-
-```powershell
-python scripts/generation/judge_filter.py --input-file data/tenacious_bench_v0.1/dev/programmatic_batch1.jsonl
-```
-
-### Spot-check intended failure isolations
-
-```powershell
-python -c "import json
-from collections import Counter
-
-tasks = [json.loads(l) for l in open('data/tenacious_bench_v0.1/dev/programmatic_batch1.jsonl', encoding='utf-8')]
-print('Total:', len(tasks))
-print('Difficulty:', Counter(t['difficulty'] for t in tasks))
-from benchmark.scoring_evaluator import score_task
+# 3. Verify B/C variant isolation (programmatic batch)
+python -c "
+import json, sys
+sys.path.insert(0, 'benchmark')
+from scoring_evaluator import score_task
+tasks = [json.loads(l) for l in open('data/tenacious_bench_v0.1/dev/programmatic_batch1.jsonl')]
 b_ok = all(score_task(t)['grounding_fidelity']==0 for t in tasks if t['task_id'].endswith('B'))
 c_ok = all(score_task(t)['icp_pitch_alignment']==0 for t in tasks if t['task_id'].endswith('C'))
 print('B D1=0:', b_ok, '| C D2=0:', c_ok)
 "
+
+# 4. Contamination check
+python scripts/analysis/contamination_check.py
 ```
 
-## Interim Submission Readiness (Acts I–II)
+---
 
-This repo contains the core Act I/II implementation, but is not fully interim-ready yet.
+## Dataset Composition
 
-Present:
+| Source Mode | Tasks | Easy | Medium | Hard | PASS | REJECT |
+|-------------|-------|------|--------|------|------|--------|
+| trace_derived | 75 | 15 | 32 | 28 | 22 | 53 |
+| programmatic | 75 | 20 | 30 | 25 | 25 | 50 |
+| adversarial_hand | 40 | 8 | 1 | 31 | 9 | 31 |
+| synthetic_semantic | 60 | — | — | — | 60 | 0 |
+| **Total** | **250** | 43 | 63 | 84 | 116 | 134 |
 
-- Act I audit memo: docs/audit_memo.md
-- Methodology draft: docs/methodology.md
-- Schema + evaluator: benchmark/schema.json, benchmark/scoring_evaluator.py
-- Dev tasks (150 total so far): data/tenacious_bench_v0.1/dev/*.jsonl
-- Generation scripts: scripts/generation/
-- Synthesis memos (common readings): docs/synthesis_memos/
-- Cost log: docs/cost_log.md
+Synthetic semantic tasks (TB-SEM) are Phase 2 probes — all pass D1–D5 deterministically
+but carry semantically unjustified claims. They are not scored PASS/REJECT in the
+D1–D5 sense; difficulty labels not assigned.
 
-Missing (required for interim):
+---
 
-- Populated dataset partitions:
-	- data/tenacious_bench_v0.1/train/
-	- data/tenacious_bench_v0.1/held_out/
-- Datasheet (3–5 pages) for Tenacious-Bench v0.1 (e.g., datasheet.md)
-- Contamination check outputs (e.g., contamination_check.json) + script
-- Inter-rater agreement artifact (e.g., inter_rater_agreement.md)
+## Rubric Dimensions
 
+| Code | Dimension | Rule |
+|------|-----------|------|
+| D1 | Grounding Fidelity | All numerics in email appear in brief; `bench_available=False` blocks product claims |
+| D2 | ICP Pitch Alignment | `segment=Ambiguous` + product claim = REJECT (Phase 1 fast-fail) |
+| D3 | Signal Directionality | `delta_pct < -20%` + growth-frame term = REJECT |
+| D4 | Tone Compliance | 18 banned phrases (hyperbole, urgency, condescension) |
+| D5 | Format Compliance | Subject ≤60 chars, body ≤120 words, ≤1 `?`, no URLs |
+
+All five dimensions are deterministic — no LLM at evaluation time.
+
+---
+
+## What's Next (Days 4–7)
+
+- **Day 4**: Synthesis memos, itemise cost log, sentence-transformers cosine recheck
+- **Day 5**: HuggingFace upload (`train/` + `dev/`), preference pair generation (~100 pairs)
+- **Day 6**: SimPO fine-tune Qwen 3.5 0.8B on Colab T4 (LoRA rank 16, adapter-only)
+- **Day 6–7**: Held-out evaluation (≤4 passes), precision/recall/F1 vs. deterministic scorer
+- **Day 7**: Final report (Act III: training curves, held-out metrics, error analysis)

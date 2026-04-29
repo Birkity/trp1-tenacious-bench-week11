@@ -131,15 +131,19 @@ Tasks scoring below threshold on any dimension are discarded. Difficulty labels 
 
 ### 3.5 Dataset Partitioning
 
-The 250 tasks are split deterministically (seed=42):
+The 250 tasks are split deterministically (seed=42) using a **family-aware shuffle**.
+All tasks from the same company (trace-derived) or the same parameter combo (programmatic
+A/B/C variants) are grouped into one "family" and kept in the same partition. This prevents
+contamination via shared observation text.
 
-| Partition | Ratio | Count | Purpose |
-|-----------|-------|-------|---------|
-| `train/` | 50% | 125 | Preference pair generation for SimPO training |
-| `dev/` | 30% | 75 | Public evaluation set |
-| `held_out/` | 20% | 50 | Sealed; used only for final evaluation |
+| Partition | Target | Actual | Purpose | SHA-256 checksum (16 hex) |
+|-----------|--------|--------|---------|--------------------------|
+| `train/` | 50% | 123 | Preference pair generation for SimPO training | `942091897fdc47e8` |
+| `dev/` | 30% | 83 | Public evaluation set | `214d6263ff15d26a` |
+| `held_out/` | 20% | 44 | Sealed; used only for final evaluation | `ab4775b484c51846` |
 
-The shuffle uses `random.seed(42)` applied after sorting by `task_id`. Partition checksums (SHA-256 of sorted task IDs) are recorded for reproducibility.
+Slight deviation from exact 50/30/20 is expected with family-aware splitting (families have
+varying sizes). The split script is `scripts/generation/partition.py` with `RANDOM_SEED = 42`.
 
 ---
 
@@ -236,7 +240,7 @@ This is v0.1. Future versions will be tagged with semantic versioning. Changes t
 
 ### 7.2 Contact
 
-Birkity Mekasha — Birkity@10academy.org  
+Birkity Yishak — Birkity@10academy.org  
 Research Partner, Tenacious Intelligence Corporation
 
 ### 7.3 Known Limitations

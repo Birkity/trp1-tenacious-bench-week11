@@ -84,23 +84,68 @@ def load_all_tasks() -> list[dict]:
     return tasks
 
 
+def _task_family(task: dict) -> str:
+    """
+    Return the contamination family of a task — the group of tasks that share
+    the same company signal and must stay in the same partition.
+
+    For trace-derived tasks: all events from the same company share the same
+    observation text (5 events × same company). Group by company name.
+
+    For programmatic tasks: A/B/C variants share the same observation. Group
+    by the numeric prefix (TB-PROG-007A → TB-PROG-007).
+
+    For adversarial and synthetic tasks: each task is independent.
+    """
+    import re
+    task_id = task.get("task_id", "")
+    source_mode = task.get("brief", {}).get("source_mode", "")
+
+    # Trace-derived: group by company (all events from same company share observation)
+    if task_id.startswith("TB-TRACE") or source_mode == "trace_derived":
+        company = task.get("brief", {}).get("company", task_id)
+        return f"company::{company}"
+
+    # Programmatic: group A/B/C variants together
+    m = re.match(r"^(TB-PROG-\d+)[ABC]$", task_id)
+    if m:
+        return m.group(1)
+
+    # Adversarial and synthetic: each task is its own family
+    return task_id
+
+
 def deterministic_split(
     tasks: list[dict], seed: int
 ) -> tuple[list[dict], list[dict], list[dict]]:
-    # Stable shuffle using task_id as secondary sort key for reproducibility
+    """
+    Family-aware split: tasks that share observation text (same company, or
+    A/B/C variants) are kept in the same partition to prevent contamination.
+    """
+    from collections import defaultdict
+    families: dict[str, list[dict]] = defaultdict(list)
+    for t in tasks:
+        families[_task_family(t)].append(t)
+
     rng = random.Random(seed)
-    shuffled = tasks.copy()
-    shuffled.sort(key=lambda t: t["task_id"])  # canonical order first
-    rng.shuffle(shuffled)
+    family_keys = sorted(families.keys())
+    rng.shuffle(family_keys)
 
-    n = len(shuffled)
-    n_train = int(n * TRAIN_RATIO)
-    n_dev   = int(n * DEV_RATIO)
+    n_families = len(family_keys)
+    n_train_fam = int(n_families * TRAIN_RATIO)
+    n_dev_fam   = int(n_families * DEV_RATIO)
 
-    train    = shuffled[:n_train]
-    dev      = shuffled[n_train:n_train + n_dev]
-    held_out = shuffled[n_train + n_dev:]
-    return train, dev, held_out
+    train_keys    = family_keys[:n_train_fam]
+    dev_keys      = family_keys[n_train_fam:n_train_fam + n_dev_fam]
+    held_out_keys = family_keys[n_train_fam + n_dev_fam:]
+
+    def flatten(keys: list[str]) -> list[dict]:
+        result: list[dict] = []
+        for k in sorted(keys):
+            result.extend(sorted(families[k], key=lambda t: t["task_id"]))
+        return result
+
+    return flatten(train_keys), flatten(dev_keys), flatten(held_out_keys)
 
 
 def write_jsonl(path: Path, tasks: list[dict]) -> None:
