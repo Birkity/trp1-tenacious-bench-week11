@@ -1,0 +1,128 @@
+{
+  "slug": "snaptrade",
+  "company": "SnapTrade",
+  "prospect_email": "snaptrade.prospect@sink.example.com",
+  "status": "booked",
+  "turns": [
+    {
+      "turn": 0,
+      "from": "agent",
+      "type": "outbound_email",
+      "subject": "Context: Job postings decreased -60% in 60 days",
+      "body": "SnapTrade Contact,\nJob postings have decreased 60% in the last 60 days.\nCompanies in your position often face bottlenecks integrating new APIs.\nTenacious provides engineers who can augment your team and accelerate API development.\nWhat are your biggest challenges in maintaining API integrations?\n\nBirkity\nResearch Partner, Tenacious Intelligence Corporation\ngettenacious.com",
+      "grounding_facts": [
+        "Job postings have decreased 60% in the last 60 days.",
+        "Seed round $3.2M in 2021"
+      ],
+      "icp_segment_used": "Ambiguous",
+      "sink_mode": true,
+      "timestamp": "2026-04-28T07:11:15.726838+00:00"
+    },
+    {
+      "turn": 1,
+      "from": "prospect",
+      "reply_text": "we seem to handle it okay...what do you guys offer",
+      "channel": "email",
+      "interpretation": {
+        "intent": "QUESTION",
+        "next_step": "SEND_EMAIL",
+        "confidence": 0.9,
+        "reasoning": "The prospect's reply, \"what do you guys offer\", is a direct question about our services. This indicates they are seeking more information.",
+        "grounding_facts_used": [
+          "Job postings have decreased 60% in the last 60 days.",
+          "Tenacious can augment SnapTrade's engineering team to accelerate API development."
+        ]
+      },
+      "routing": {
+        "actions": [
+          "hubspot_lookup: no contact found",
+          "clarification_sent: sent"
+        ],
+        "errors": [],
+        "cal_link": null
+      },
+      "sms": null,
+      "timestamp": "2026-04-28T07:12:39.075283+00:00"
+    },
+    {
+      "turn": 2,
+      "from": "agent",
+      "type": "clarification_email",
+      "subject": "Re: More context on Tenacious - SnapTrade",
+      "body": "SnapTrade Contact,\n\nGood question. Tenacious Intelligence Corporation provides managed engineering teams and project-based consulting for technology companies.\n\nBased on our research, SnapTrade recently job postings have decreased 60% in the last 60 days.. Tenacious can augment SnapTrade's engineering team to accelerate API development.\n\nWhat would be most useful to dig into first?\n\nBirkity\nResearch Partner, Tenacious Intelligence Corporation\ngettenacious.com",
+      "timestamp": "2026-04-28T07:12:39.075283+00:00"
+    },
+    {
+      "turn": 3,
+      "from": "prospect",
+      "reply_text": "Again how is it different from what we do",
+      "channel": "email",
+      "interpretation": {
+        "intent": "QUESTION",
+        "next_step": "SEND_EMAIL",
+        "confidence": 0.9,
+        "reasoning": "The prospect is asking a question about how our services differ from their current operations. The phrase \"how is it different from what we do\" indicates a request for clarification.",
+        "grounding_facts_used": [
+          "SnapTrade AI Maturity Score: 0/3",
+          "Hiring Velocity: decelerating (-60.0% delta, moderate signal). Job postings have decreased in the last 60 days.",
+          "Tenacious can augment SnapTrade's engineering team to accelerate API development."
+        ]
+      },
+      "routing": {
+        "actions": [
+          "hubspot_lookup: no contact found",
+          "clarification_sent: sent"
+        ],
+        "errors": [],
+        "cal_link": null
+      },
+      "sms": null,
+      "timestamp": "2026-04-28T07:13:19.376577+00:00"
+    },
+    {
+      "turn": 4,
+      "from": "agent",
+      "type": "clarification_email",
+      "subject": "Re: More context on Tenacious - SnapTrade",
+      "body": "SnapTrade Contact,\n\nGood question. Tenacious Intelligence Corporation provides managed engineering teams and project-based consulting for technology companies.\n\nBased on our research, SnapTrade recently snaptrade ai maturity score: 0/3. Tenacious can augment SnapTrade's engineering team to accelerate API development.\n\nWhat would be most useful to dig into first?\n\nBirkity\nResearch Partner, Tenacious Intelligence Corporation\ngettenacious.com",
+      "timestamp": "2026-04-28T07:13:19.376577+00:00"
+    },
+    {
+      "turn": 5,
+      "from": "prospect",
+      "reply_text": "okay sure I would like to hear more",
+      "channel": "email",
+      "interpretation": {
+        "intent": "INTERESTED",
+        "next_step": "SEND_CAL_LINK",
+        "confidence": 0.9,
+        "reasoning": "The prospect replied with \"okay sure I would like to hear more\", which is a clear positive signal indicating interest in learning more about our services.",
+        "grounding_facts_used": [
+          "SnapTrade AI maturity score: 0/3",
+          "Tenacious can augment SnapTrade's engineering team to accelerate API development."
+        ]
+      },
+      "routing": {
+        "actions": [
+          "hubspot_lookup: no contact found",
+          "cal_link_sent: sent"
+        ],
+        "errors": [],
+        "cal_link": "https://cal.com/birkity-famsl2/intro-call-engineering-scaling?name=SnapTrade+Contact&email=snaptrade.prospect%40sink.example.com&notes=Tenacious+can+augment+SnapTrade%27s+engineering+team+to+accelerate+API+development."
+      },
+      "sms": null,
+      "timestamp": "2026-04-28T07:14:34.864090+00:00"
+    },
+    {
+      "turn": 6,
+      "from": "agent",
+      "type": "cal_link_email",
+      "subject": "Re: Booking link - SnapTrade",
+      "body": "SnapTrade Contact,\n\nGreat to hear from you. Here is a link to book a time:\n\nhttps://cal.com/birkity-famsl2/intro-call-engineering-scaling?name=SnapTrade+Contact&email=snaptrade.prospect%40sink.example.com&notes=Tenacious+can+augment+SnapTrade%27s+engineering+team+to+accelerate+API+development.\n\nPick any slot that works -- looking forward to the conversation.\n\nBirkity\nResearch Partner, Tenacious Intelligence Corporation\ngettenacious.com",
+      "timestamp": "2026-04-28T07:14:34.864090+00:00"
+    }
+  ],
+  "started_at": "2026-04-28T07:11:15.726838+00:00",
+  "last_updated": "2026-04-28T07:14:34.864090+00:00",
+  "outcome": "booked"
+}

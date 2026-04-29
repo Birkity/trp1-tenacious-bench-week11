@@ -1,0 +1,68 @@
+{
+  "company": "SnapTrade",
+  "enrichment_ts": "2026-04-22T15:37:38.536101+00:00",
+  "crunchbase_found": true,
+  "crunchbase_id": "snaptrade-be4e",
+  "industries": [
+    "Developer APIs",
+    "Developer Tools",
+    "FinTech"
+  ],
+  "pre_score_ai_maturity": 0,
+  "pre_score_rationale": {
+    "ml_stack_hits": [],
+    "ai_role_hits": [],
+    "named_ai_leadership": false,
+    "exec_ai_commentary": false
+  },
+  "hiring_signal_brief": {
+    "company": "SnapTrade",
+    "hiring_velocity": {
+      "direction": "unknown",
+      "delta_pct": null,
+      "signal_strength": "insufficient_data",
+      "observation": "No job posts detected in the last 60 days or currently."
+    },
+    "budget_urgency": {
+      "level": "unknown",
+      "signal": null,
+      "runway_pressure": null
+    },
+    "cost_pressure": {
+      "present": false,
+      "signal": null,
+      "icp_segment_implication": null
+    },
+    "engineering_maturity": {
+      "stack_sophistication": "unknown",
+      "detected_stack": [],
+      "bench_match_notes": "No tech stack signals detected."
+    },
+    "ai_maturity_score": 0,
+    "ai_maturity_rationale": {
+      "ai_roles_found": [],
+      "modern_ml_stack_signals": [],
+      "executive_ai_signals": "none",
+      "named_ai_leadership": false
+    },
+    "confidence": 0.3,
+    "icp_segment": "ambiguous",
+    "recommended_pitch_angle": "SnapTrade may benefit from exploring AI/ML integration to enhance their API offerings and stay competitive."
+  },
+  "competitor_gap_brief": {
+    "sector": "Developer APIs",
+    "competitors_analyzed": 1,
+    "prospect_ai_score": 0,
+    "prospect_position_in_sector": "bottom_quartile",
+    "gaps": [
+      {
+        "practice": "AI/ML Integration",
+        "evidence_in_top_quartile": "Wit.ai shows no AI/ML signals, but other competitors may have higher maturity.",
+        "evidence_at_prospect": "SnapTrade has no AI/ML roles or stack signals.",
+        "gap_insight": "SnapTrade lacks AI/ML integration capabilities compared to industry peers.",
+        "confidence": 0.4
+      }
+    ],
+    "overall_confidence": 0.4
+  }
+}

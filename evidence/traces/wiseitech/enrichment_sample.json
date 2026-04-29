@@ -1,0 +1,87 @@
+{
+  "company": "WISEiTECH",
+  "enrichment_ts": "2026-04-22T15:36:43.018307+00:00",
+  "crunchbase_found": true,
+  "crunchbase_id": "wiseitech",
+  "industries": [
+    "Analytics",
+    "Big Data",
+    "Machine Learning"
+  ],
+  "pre_score_ai_maturity": 1,
+  "pre_score_rationale": {
+    "ml_stack_hits": [],
+    "ai_role_hits": [],
+    "named_ai_leadership": false,
+    "exec_ai_commentary": false,
+    "industry_ai_signals": [
+      "big data",
+      "machine learning",
+      "analytics"
+    ]
+  },
+  "hiring_signal_brief": {
+    "company": "WISEiTECH",
+    "hiring_velocity": {
+      "direction": "stable",
+      "delta_pct": null,
+      "signal_strength": "insufficient_data",
+      "observation": "No job posts observed in the last 60 days or currently, indicating no immediate hiring activity."
+    },
+    "budget_urgency": {
+      "level": "unknown",
+      "signal": null,
+      "runway_pressure": "No recent funding events detected, suggesting potential runway pressure but no clear evidence."
+    },
+    "cost_pressure": {
+      "present": false,
+      "signal": null,
+      "icp_segment_implication": null
+    },
+    "engineering_maturity": {
+      "stack_sophistication": "low",
+      "detected_stack": [],
+      "bench_match_notes": "No tech stack detected, indicating low engineering sophistication or incomplete data."
+    },
+    "ai_maturity_score": 0,
+    "ai_maturity_rationale": {
+      "ai_roles_found": [],
+      "modern_ml_stack_signals": [],
+      "executive_ai_signals": "none",
+      "named_ai_leadership": false
+    },
+    "confidence": 0.3,
+    "icp_segment": "ambiguous",
+    "recommended_pitch_angle": "WISEiTECH may benefit from strategic consulting to enhance their AI capabilities and engineering infrastructure."
+  },
+  "competitor_gap_brief": {
+    "sector": "Analytics, Big Data, Machine Learning",
+    "competitors_analyzed": 7,
+    "prospect_ai_score": 0,
+    "prospect_position_in_sector": "bottom_quartile",
+    "gaps": [
+      {
+        "practice": "AI maturity",
+        "evidence_in_top_quartile": "No competitors show high AI maturity, but some have basic AI roles or stacks.",
+        "evidence_at_prospect": "WISEiTECH has no AI roles or stacks detected.",
+        "gap_insight": "WISEiTECH lacks AI-related roles and tech stack compared to competitors, indicating a potential gap in AI capabilities.",
+        "confidence": 0.4
+      },
+      {
+        "practice": "Tech stack sophistication",
+        "evidence_in_top_quartile": "Some competitors have basic tech stacks, though none are highly sophisticated.",
+        "evidence_at_prospect": "WISEiTECH has no detected tech stack.",
+        "gap_insight": "WISEiTECH's lack of a detected tech stack suggests lower engineering maturity compared to some competitors.",
+        "confidence": 0.4
+      },
+      {
+        "practice": "Funding and runway management",
+        "evidence_in_top_quartile": "Competitors show no significant funding, but some may have better runway management.",
+        "evidence_at_prospect": "WISEiTECH has no recent funding and unknown runway.",
+        "gap_insight": "WISEiTECH's unknown funding status and lack of recent financial updates may indicate potential runway challenges compared to competitors.",
+        "confidence": 0.4
+      }
+    ],
+    "overall_confidence": 0.4
+  }
+}

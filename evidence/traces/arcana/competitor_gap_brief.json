@@ -1,0 +1,17 @@
+{
+  "sector": "FinTech",
+  "competitors_analyzed": 3,
+  "prospect_ai_score": 2,
+  "prospect_position_in_sector": "above_median",
+  "gaps": [
+    {
+      "practice": "Kubernetes adoption",
+      "evidence_in_top_quartile": "Ocrolus utilizes Kubernetes for container orchestration.",
+      "evidence_at_prospect": "Arcana Analytics' stack includes AWS Lambda but not Kubernetes.",
+      "gap_insight": "Top quartile competitor Ocrolus leverages Kubernetes, while Arcana Analytics does not appear to have adopted it.",
+      "confidence": 0.6
+    }
+  ],
+  "overall_confidence": 0.7,
+  "tenacious_status": "draft"
+}

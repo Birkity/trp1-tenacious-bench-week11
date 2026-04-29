@@ -1,0 +1,53 @@
+{
+  "slug": "streamlineops",
+  "company": "StreamlineOps",
+  "prospect_email": "sam.chen@sink.example.com",
+  "status": "stopped",
+  "turns": [
+    {
+      "turn": 0,
+      "from": "agent",
+      "type": "outbound_email",
+      "subject": "Context: Series B closed January 2026",
+      "body": "Sam,\n\nStreamlineOps has doubled open engineering roles since January's Series B, seeking Kafka and Spark skills.\n\nCompanies in your position often struggle to find experienced data engineers immediately available.\n\nTenacious provides pre-vetted Kafka and Spark experts who can start contributing within a week.\n\nHow are you currently addressing the talent demand to meet your roadmap?\n\nBirkity\nResearch Partner, Tenacious Intelligence Corporation\ngettenacious.com",
+      "grounding_facts": [
+        "StreamlineOps has more than doubled open engineering postings in the last 60 days",
+        "Series B $28M closed January 2026",
+        "urgent demand for Kafka and Spark engineers"
+      ],
+      "icp_segment_used": "Segment 1",
+      "sink_mode": true,
+      "timestamp": "2026-04-28T07:09:28.053437+00:00"
+    },
+    {
+      "turn": 1,
+      "from": "prospect",
+      "reply_text": "nope I dont need that",
+      "channel": "email",
+      "interpretation": {
+        "intent": "NOT_INTERESTED",
+        "next_step": "STOP",
+        "confidence": 1.0,
+        "reasoning": "The prospect explicitly stated \"nope I dont need that\", indicating they are not interested in our services.",
+        "grounding_facts_used": [
+          "StreamlineOps has doubled open engineering roles since January's Series B, seeking Kafka and Spark skills.",
+          "Series B $28M closed January 2026"
+        ]
+      },
+      "routing": {
+        "actions": [
+          "hubspot_note_added: contact_id=478266615528",
+          "hubspot_status_updated: UNQUALIFIED",
+          "outreach_stopped: prospect not interested"
+        ],
+        "errors": [],
+        "cal_link": null
+      },
+      "sms": null,
+      "timestamp": "2026-04-28T07:10:31.455440+00:00"
+    }
+  ],
+  "started_at": "2026-04-28T07:09:28.053437+00:00",
+  "last_updated": "2026-04-28T07:10:31.455440+00:00",
+  "outcome": "stopped"
+}

@@ -1,0 +1,51 @@
+{
+  "company": "StreamlineOps",
+  "hiring_velocity": {
+    "direction": "accelerating",
+    "delta_pct": 120.0,
+    "signal_strength": "strong",
+    "observation": "StreamlineOps has more than doubled open engineering postings in the last 60 days following a Series B close, with urgent demand for Kafka and Spark engineers."
+  },
+  "budget_urgency": {
+    "level": "high",
+    "signal": "Series B $28M closed January 2026",
+    "runway_pressure": "Series B capital deployed for platform scaling — hiring window is now."
+  },
+  "cost_pressure": {
+    "present": true,
+    "signal": "Offshore-friendly signals in 2 of 5 recent job postings",
+    "icp_segment_implication": "Cost-effective offshore augmentation is a viable pitch angle."
+  },
+  "engineering_maturity": {
+    "stack_sophistication": "high",
+    "detected_stack": [
+      "Python",
+      "Apache Kafka",
+      "Apache Spark",
+      "Kubernetes",
+      "AWS",
+      "dbt",
+      "Airflow"
+    ],
+    "bench_match_notes": "Strong data engineering stack. Bench has Kafka, Spark, and Kubernetes experience."
+  },
+  "ai_maturity_score": 2,
+  "ai_maturity_rationale": {
+    "ai_roles_found": ["Data Engineer", "ML Platform Engineer"],
+    "modern_ml_stack_signals": ["Airflow", "dbt"],
+    "executive_ai_signals": "moderate",
+    "named_ai_leadership": false
+  },
+  "confidence": 0.92,
+  "icp_segment": "Segment 1",
+  "recommended_pitch_angle": "Tenacious can provide experienced Kafka and Spark engineers to StreamlineOps immediately — matching their stack and saving 3-4 months of recruitment time.",
+  "bench_match": {
+    "required_stacks": ["python", "data", "infra", "kafka", "spark"],
+    "bench_available": true
+  },
+  "honesty_flags": {
+    "weak_hiring_velocity_signal": false,
+    "bench_gap_detected": false
+  },
+  "tenacious_status": "draft"
+}

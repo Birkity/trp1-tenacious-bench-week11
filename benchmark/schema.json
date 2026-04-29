@@ -1,0 +1,255 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Tenacious-Bench Task v0.1",
+  "description": "Minimal schema for a single Tenacious-Bench scoring task. The task supplies evidence plus one candidate email; the evaluator returns binary dimension scores and an overall PASS/REJECT verdict.",
+  "type": "object",
+  "required": [
+    "task_id",
+    "brief",
+    "email",
+    "prior_thread",
+    "bench_summary",
+    "rubric"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "description": "Stable task identifier, for example TB-DUMMY-001 or TB-0001."
+    },
+    "brief": {
+      "type": "object",
+      "required": [
+        "company",
+        "icp_segment",
+        "confidence",
+        "hiring_velocity",
+        "grounding_facts"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "company": {
+          "type": "string"
+        },
+        "icp_segment": {
+          "type": "string",
+          "enum": [
+            "Segment 1",
+            "Segment 2",
+            "Segment 3",
+            "Segment 4",
+            "Ambiguous",
+            "ambiguous"
+          ]
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "hiring_velocity": {
+          "type": "object",
+          "required": [
+            "direction",
+            "delta_pct",
+            "signal_strength",
+            "observation"
+          ],
+          "additionalProperties": true,
+          "properties": {
+            "direction": {
+              "type": "string",
+              "enum": [
+                "accelerating",
+                "decelerating",
+                "stable",
+                "unknown"
+              ]
+            },
+            "delta_pct": {
+              "type": "number"
+            },
+            "signal_strength": {
+              "type": "string",
+              "enum": [
+                "strong",
+                "moderate",
+                "weak",
+                "unknown"
+              ]
+            },
+            "observation": {
+              "type": "string"
+            }
+          }
+        },
+        "budget_urgency": {
+          "type": "object"
+        },
+        "cost_pressure": {
+          "type": "object"
+        },
+        "engineering_maturity": {
+          "type": "object"
+        },
+        "ai_maturity_score": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 3
+        },
+        "recommended_pitch_angle": {
+          "type": "string"
+        },
+        "bench_match": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "required_stacks": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "bench_available": {
+              "type": "boolean"
+            },
+            "unavailable_stacks": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "honesty_flags": {
+          "type": "object"
+        },
+        "grounding_facts": {
+          "type": "array",
+          "description": "Canonical evidence strings the email is allowed to use.",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        }
+      }
+    },
+    "email": {
+      "type": "object",
+      "required": [
+        "subject",
+        "body"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "subject": {
+          "type": "string"
+        },
+        "body": {
+          "type": "string"
+        },
+        "grounding_facts": {
+          "type": "array",
+          "description": "Optional facts the generator claims it used.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "icp_segment_used": {
+          "type": "string"
+        },
+        "word_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "tone_warnings": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "prior_thread": {
+      "type": "string",
+      "description": "Prior conversation text. Empty string for first-touch outreach."
+    },
+    "bench_summary": {
+      "type": "string",
+      "description": "Compact text summary of relevant Tenacious capacity and constraints for this task."
+    },
+    "rubric": {
+      "type": "object",
+      "required": [
+        "dimensions",
+        "negative_velocity_threshold_pct",
+        "max_subject_chars",
+        "max_body_words",
+        "approved_subject_prefixes",
+        "banned_phrases",
+        "growth_frame_terms",
+        "product_claim_terms"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "dimensions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "grounding_fidelity",
+              "icp_pitch_alignment",
+              "signal_directionality",
+              "tone_compliance",
+              "format_compliance"
+            ]
+          },
+          "minItems": 5,
+          "maxItems": 5
+        },
+        "negative_velocity_threshold_pct": {
+          "type": "number",
+          "description": "Below this delta, growth-frame language is rejected. Default: -20."
+        },
+        "max_subject_chars": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 60
+        },
+        "max_body_words": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 120
+        },
+        "approved_subject_prefixes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "banned_phrases": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "growth_frame_terms": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "product_claim_terms": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "icp_pitch_alignment_policy": {
+          "type": "string",
+          "description": "Human-readable policy for the future LLM judge. Phase 1 uses deterministic obvious-fail checks only."
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "company": "Arcana Analytics",
+  "hiring_velocity": {
+    "direction": "accelerating",
+    "delta_pct": 100.0,
+    "signal_strength": "strong",
+    "observation": "Arcana Analytics has doubled its open job postings in the last 60 days, suggesting an increase in hiring activity."
+  },
+  "budget_urgency": {
+    "level": "high",
+    "signal": "Series A $14M closed March 2026",
+    "runway_pressure": "Recent Series A funding suggests available capital for expansion."
+  },
+  "cost_pressure": {
+    "present": false,
+    "signal": null,
+    "icp_segment_implication": null
+  },
+  "engineering_maturity": {
+    "stack_sophistication": "high",
+    "detected_stack": [
+      "Python",
+      "FastAPI",
+      "dbt",
+      "Snowflake",
+      "Airflow",
+      "PyTorch",
+      "AWS Lambda",
+      "Postgres"
+    ],
+    "bench_match_notes": "Modern data and ML stack observed."
+  },
+  "ai_maturity_score": 2,
+  "ai_maturity_rationale": {
+    "ai_roles_found": [
+      "ML Engineer",
+      "Data Scientist"
+    ],
+    "modern_ml_stack_signals": [
+      "PyTorch"
+    ],
+    "executive_ai_signals": "strong",
+    "named_ai_leadership": false
+  },
+  "confidence": 0.9,
+  "icp_segment": "Segment 1",
+  "recommended_pitch_angle": "Tenacious can augment Arcana Analytics' ML engineering team to accelerate the development of their AI-first credit intelligence layer.",
+  "bench_match": {
+    "required_stacks": [
+      "python",
+      "data",
+      "ml",
+      "infra"
+    ],
+    "bench_available": true
+  },
+  "honesty_flags": {
+    "weak_hiring_velocity_signal": false,
+    "bench_gap_detected": false
+  },
+  "tenacious_status": "draft"
+}

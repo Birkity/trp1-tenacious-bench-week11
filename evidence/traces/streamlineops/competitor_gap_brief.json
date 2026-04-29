@@ -1,0 +1,17 @@
+{
+  "sector": "Data Infrastructure / FinOps",
+  "competitors_analyzed": 4,
+  "prospect_ai_score": 2,
+  "prospect_position_in_sector": "above_median",
+  "gaps": [
+    {
+      "practice": "Real-time ML feature stores",
+      "evidence_in_top_quartile": "Top-quartile data infra peers (Databricks-native shops) use Feast or Tecton for real-time feature serving at scale.",
+      "evidence_at_prospect": "StreamlineOps uses Airflow + dbt for batch pipelines but no evidence of a real-time feature store in job postings.",
+      "gap_insight": "Peer leaders in data infrastructure have moved to real-time feature serving; StreamlineOps' batch-only approach creates a latency gap for time-sensitive analytics.",
+      "confidence": 0.7
+    }
+  ],
+  "overall_confidence": 0.78,
+  "tenacious_status": "draft"
+}

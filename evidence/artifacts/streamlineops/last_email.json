@@ -1,0 +1,13 @@
+{
+  "subject": "Context: Series B closed January 2026",
+  "body": "Sam,\n\nStreamlineOps has doubled open engineering roles since January's Series B, seeking Kafka and Spark skills.\n\nCompanies in your position often struggle to find experienced data engineers immediately available.\n\nTenacious provides pre-vetted Kafka and Spark experts who can start contributing within a week.\n\nHow are you currently addressing the talent demand to meet your roadmap?\n\nBirkity\nResearch Partner, Tenacious Intelligence Corporation\ngettenacious.com",
+  "grounding_facts": [
+    "StreamlineOps has more than doubled open engineering postings in the last 60 days",
+    "Series B $28M closed January 2026",
+    "urgent demand for Kafka and Spark engineers"
+  ],
+  "icp_segment_used": "Segment 1",
+  "timestamp": "2026-04-28T07:09:28.053437+00:00",
+  "company": "StreamlineOps",
+  "prospect_email": "sam.chen@sink.example.com"
+}

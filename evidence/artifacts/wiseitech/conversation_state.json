@@ -1,0 +1,93 @@
+{
+  "slug": "wiseitech",
+  "company": "WiseiTech",
+  "prospect_email": "wiseitech.prospect@sink.example.com",
+  "status": "booked",
+  "turns": [
+    {
+      "turn": 0,
+      "from": "agent",
+      "type": "outbound_email",
+      "subject": "Context: decelerating job postings",
+      "body": "WiseiTech Contact,\n\nI see WiseiTech's job postings have decreased recently.\n\nCompanies in your position often find themselves needing to augment existing Python, Big Data, and ML capabilities.\n\nTenacious provides research-backed engineers available on-demand.\n\nHow are you handling the current workload with the reduced hiring?\n\nBirkity\nResearch Partner, Tenacious Intelligence Corporation\ngettenacious.com",
+      "grounding_facts": [
+        "WiseiTech's hiring appears to be decelerating based on a decrease in job postings."
+      ],
+      "icp_segment_used": "Ambiguous",
+      "sink_mode": true,
+      "timestamp": "2026-04-27T17:10:47.300709+00:00"
+    },
+    {
+      "turn": 1,
+      "from": "prospect",
+      "reply_text": "I am not sure about that, I think we are handling it well",
+      "channel": "email",
+      "interpretation": {
+        "intent": "UNKNOWN",
+        "next_step": "ASK_CLARIFICATION",
+        "confidence": 0.7,
+        "reasoning": "The prospect's reply \"I am not sure about that, I think we are handling it well\" is ambiguous. It doesn't clearly indicate interest or disinterest, and it doesn't ask a question. The prospect is not explicitly rejecting our services, but they are also not acknowledging a gap or expressing a need.",
+        "grounding_facts_used": [
+          "WiseiTech's hiring appears to be decelerating based on a decrease in job postings.",
+          "Tenacious can augment WiseiTech's existing Python, Big Data, and ML capabilities."
+        ]
+      },
+      "routing": {
+        "actions": [
+          "hubspot_lookup: no contact found",
+          "clarification_asked: sent"
+        ],
+        "errors": [],
+        "cal_link": null
+      },
+      "sms": null,
+      "timestamp": "2026-04-28T07:06:58.404575+00:00"
+    },
+    {
+      "turn": 2,
+      "from": "agent",
+      "type": "clarification_email",
+      "subject": "Re: Quick clarification - WiseiTech",
+      "body": "WiseiTech Contact,\n\nThanks for the reply. I want to make sure I understand correctly -- would it be helpful if I shared more about what Tenacious does for companies like WiseiTech, or would you prefer I follow up at a different time?\n\nEither way, no pressure.\n\nBirkity\nResearch Partner, Tenacious Intelligence Corporation\ngettenacious.com",
+      "timestamp": "2026-04-28T07:06:58.404575+00:00"
+    },
+    {
+      "turn": 3,
+      "from": "prospect",
+      "reply_text": "yeah sure",
+      "channel": "email",
+      "interpretation": {
+        "intent": "INTERESTED",
+        "next_step": "SEND_CAL_LINK",
+        "confidence": 0.9,
+        "reasoning": "The prospect replied with \"yeah sure\" to our email asking if they would like to learn more about what Tenacious does for companies like WiseiTech. This is a clear positive signal.",
+        "grounding_facts_used": [
+          "WiseiTech AI Maturity Score: 0/3",
+          "Tenacious can augment WiseiTech's existing Python, Big Data, and ML capabilities.",
+          "Dedicated AI/ML Engineering gap identified with confidence: 0.9"
+        ]
+      },
+      "routing": {
+        "actions": [
+          "hubspot_lookup: no contact found",
+          "cal_link_sent: sent"
+        ],
+        "errors": [],
+        "cal_link": "https://cal.com/birkity-famsl2/intro-call-engineering-scaling?name=WiseiTech+Contact&email=wiseitech.prospect%40sink.example.com&notes=Tenacious+can+augment+WiseiTech%27s+existing+Python%2C+Big+Data%2C+and+ML+capabilities."
+      },
+      "sms": null,
+      "timestamp": "2026-04-28T07:07:55.698618+00:00"
+    },
+    {
+      "turn": 4,
+      "from": "agent",
+      "type": "cal_link_email",
+      "subject": "Re: Booking link - WiseiTech",
+      "body": "WiseiTech Contact,\n\nGreat to hear from you. Here is a link to book a time:\n\nhttps://cal.com/birkity-famsl2/intro-call-engineering-scaling?name=WiseiTech+Contact&email=wiseitech.prospect%40sink.example.com&notes=Tenacious+can+augment+WiseiTech%27s+existing+Python%2C+Big+Data%2C+and+ML+capabilities.\n\nPick any slot that works -- looking forward to the conversation.\n\nBirkity\nResearch Partner, Tenacious Intelligence Corporation\ngettenacious.com",
+      "timestamp": "2026-04-28T07:07:55.698618+00:00"
+    }
+  ],
+  "started_at": "2026-04-27T17:10:47.300709+00:00",
+  "last_updated": "2026-04-28T07:07:55.698618+00:00",
+  "outcome": "booked"
+}

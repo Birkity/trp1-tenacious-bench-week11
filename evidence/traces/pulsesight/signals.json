@@ -1,0 +1,38 @@
+{
+  "company_name": "PulseSight",
+  "industries": ["AI/ML Infrastructure", "Developer Tools", "SaaS"],
+  "headcount": "31",
+  "description": "PulseSight builds real-time anomaly detection and observability tooling for ML models in production. Their platform monitors model drift, latency degradation, and data quality across inference pipelines. Customers include mid-market SaaS and fintech companies running models in production.",
+  "funding_info": "Series A $9M closed January 2026. Lead investor: Unusual Ventures. Total raised: $11.2M.",
+  "layoffs": "No layoff events found in last 120 days.",
+  "jobs_now": 7,
+  "jobs_60_days": 3,
+  "tech_stack": ["Python", "FastAPI", "Kubernetes", "AWS", "PostgreSQL", "ClickHouse", "Kafka"],
+  "ai_roles": [
+    "ML Infrastructure Engineer (open 52 days, no hire)",
+    "Senior Backend Engineer — ML Platform (open 38 days, no hire)"
+  ],
+  "leadership_changes": "New VP of Engineering hired November 2025 (Jordan Kim, formerly Weights & Biases platform lead).",
+  "recent_news": "Series A $9M announced January 2026. VP Engineering hire from Weights & Biases announced December 2025. Presented at MLSys 2025 on low-latency inference monitoring.",
+  "competitor_signals": [
+    {
+      "name": "Arize AI",
+      "funding": "Series B $38M",
+      "tech_stack": ["Python", "Spark", "Kubernetes", "AWS", "Snowflake"],
+      "ai_maturity_score": 3
+    },
+    {
+      "name": "Evidently AI",
+      "funding": "Seed $5M",
+      "tech_stack": ["Python", "FastAPI", "PostgreSQL", "AWS"],
+      "ai_maturity_score": 2
+    },
+    {
+      "name": "Fiddler AI",
+      "funding": "Series B $46M",
+      "tech_stack": ["Python", "Kubernetes", "Spark", "Azure"],
+      "ai_maturity_score": 3
+    }
+  ],
+  "_policy_note": "Synthetic company. All data derived from fabricated but plausible public signals. Rule 3: no real company PII included."
+}

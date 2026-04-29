@@ -1,0 +1,17 @@
+{
+  "tenacious_status": "draft",
+  "sector": "FinTech",
+  "competitors_analyzed": 3,
+  "prospect_ai_score": 0,
+  "prospect_position_in_sector": "bottom_quartile",
+  "gaps": [
+    {
+      "practice": "Adoption of modern ML stacks",
+      "evidence_in_top_quartile": "Plaid utilizes TensorFlow and Kubernetes.",
+      "evidence_at_prospect": "SnapTrade's stack does not include modern ML tools.",
+      "gap_insight": "Competitors are investing in machine learning infrastructure.",
+      "confidence": 0.8
+    }
+  ],
+  "overall_confidence": 0.75
+}

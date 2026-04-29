@@ -1,0 +1,34 @@
+{
+  "company_name": "Arcana Analytics",
+  "industries": ["FinTech", "Data Analytics", "SaaS"],
+  "headcount": "42",
+  "description": "Arcana Analytics builds embedded financial intelligence for mid-market lending platforms. Their core product is a real-time credit-decision API that combines alternative data (payroll, bank transaction, behavioral) with traditional bureau signals. Founded 2022, Series A closed March 2026.",
+  "funding_info": "Series A $14M closed March 2026 led by Gradient Ventures. Total raised: $17.5M.",
+  "layoffs": "No layoff events found in last 120 days.",
+  "jobs_now": 6,
+  "jobs_60_days": 3,
+  "tech_stack": ["Python", "FastAPI", "dbt", "Snowflake", "Airflow", "PyTorch", "AWS Lambda", "Postgres"],
+  "ai_roles": ["ML Engineer", "Data Scientist"],
+  "leadership_changes": "No leadership changes detected in last 90 days.",
+  "recent_news": "Series A announced March 2026. CEO quoted in TechCrunch: 'We are building an AI-first credit intelligence layer.' Engineering blog post on LLM-assisted underwriting published April 2026.",
+  "competitor_signals": [
+    {
+      "name": "Ocrolus",
+      "funding": "Series C $80M",
+      "tech_stack": ["Python", "TensorFlow", "Kubernetes", "AWS"],
+      "ai_maturity_score": 3
+    },
+    {
+      "name": "Inscribe",
+      "funding": "Series B $25M",
+      "tech_stack": ["Python", "FastAPI", "dbt", "MLflow"],
+      "ai_maturity_score": 2
+    },
+    {
+      "name": "Railz",
+      "funding": "Series A $10M",
+      "tech_stack": ["Python", "Snowflake", "React"],
+      "ai_maturity_score": 1
+    }
+  ]
+}

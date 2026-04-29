@@ -1,0 +1,658 @@
+[
+  {
+    "id": 1,
+    "category": "reply_intent_ambiguity",
+    "reply": "Maybe. I'll think about it.",
+    "expected_intent": "UNKNOWN",
+    "expected_next_step": "ASK_CLARIFICATION",
+    "actual_intent": "UNKNOWN",
+    "actual_next_step": "ASK_CLARIFICATION",
+    "confidence": 0.9,
+    "reasoning": "The prospect's reply is ambiguous and non-committal. The phrases \"Maybe\" and \"I'll think about it\" do not indicate clear interest or disinterest.",
+    "grounding_facts_used": [
+      "Arcana Analytics has doubled its open job postings in the last 60 days.",
+      "Series A $14M closed March 2026"
+    ],
+    "passed": true,
+    "intent_ok": true,
+    "step_ok": true,
+    "elapsed_s": 4.84,
+    "risk_explained": "Soft defer may be misclassified as NOT_INTERESTED, causing premature STOP and losing a warm lead permanently."
+  },
+  {
+    "id": 2,
+    "category": "reply_intent_ambiguity",
+    "reply": "Could be interesting, depends on the pricing.",
+    "expected_intent": "QUESTION",
+    "expected_next_step": "SEND_EMAIL",
+    "actual_intent": "QUESTION",
+    "actual_next_step": "SEND_EMAIL",
+    "confidence": 0.9,
+    "reasoning": "The prospect's reply 'Could be interesting, depends on the pricing' indicates they are potentially interested but need more information about pricing before making a decision. This is a request for clarification, so it's classified as a QUESTION.",
+    "grounding_facts_used": [
+      "Arcana Analytics has doubled its open job postings in the last 60 days.",
+      "Series A $14M closed March 2026",
+      "Tenacious can augment Arcana Analytics' ML engineering team to accelerate the development of their AI-first credit intelligence layer."
+    ],
+    "passed": true,
+    "intent_ok": true,
+    "step_ok": true,
+    "elapsed_s": 1.77,
+    "risk_explained": "Pricing objection framing may trigger NOT_INTERESTED + STOP instead of QUESTION + SEND_EMAIL, which should address pricing by routing to a human, not stopping."
+  },
+  {
+    "id": 3,
+    "category": "reply_intent_ambiguity",
+    "reply": "Timing is off right now but not never.",
+    "expected_intent": "UNKNOWN",
+    "expected_next_step": "ASK_CLARIFICATION",
+    "actual_intent": "UNKNOWN",
+    "actual_next_step": "ASK_CLARIFICATION",
+    "confidence": 0.9,
+    "reasoning": "The prospect's reply, \"Timing is off right now but not never,\" is ambiguous and doesn't indicate clear interest or disinterest. The phrase \"not never\" suggests a possibility in the future, but it's not a commitment or a clear signal.",
+    "grounding_facts_used": [
+      "Arcana Analytics has doubled its open job postings in the last 60 days.",
+      "Series A $14M closed March 2026",
+      "Tenacious can augment Arcana Analytics' ML engineering team to accelerate the development of their AI-first credit intelligence layer."
+    ],
+    "passed": true,
+    "intent_ok": true,
+    "step_ok": true,
+    "elapsed_s": 1.73,
+    "risk_explained": "Soft defer with future signal. STOP here permanently closes a re-engageable lead. System must classify UNKNOWN and clarify timeline."
+  },
+  {
+    "id": 4,
+    "category": "hostile_sarcastic",
+    "reply": "lol another body shop. thanks but no thanks.",
+    "expected_intent": "NOT_INTERESTED",
+    "expected_next_step": "STOP",
+    "actual_intent": "NOT_INTERESTED",
+    "actual_next_step": "STOP",
+    "confidence": 0.9,
+    "reasoning": "The prospect explicitly stated \"thanks but no thanks\", indicating they are not interested in our services. The phrase \"another body shop\" suggests a negative perception of our offering.",
+    "grounding_facts_used": [
+      "Arcana Analytics has doubled its open job postings in the last 60 days.",
+      "Series A $14M closed March 2026",
+      "Tenacious can augment Arcana Analytics' ML engineering team to accelerate the development of their AI-first credit intelligence layer."
+    ],
+    "passed": true,
+    "intent_ok": true,
+    "step_ok": true,
+    "elapsed_s": 2.14,
+    "risk_explained": "Sarcasm and 'body shop' label. System must classify as NOT_INTERESTED and STOP. Any rebuttal escalates hostility and risks brand damage."
+  },
+  {
+    "id": 5,
+    "category": "hostile_sarcastic",
+    "reply": "Please remove me from your list immediately.",
+    "expected_intent": "NOT_INTERESTED",
+    "expected_next_step": "STOP",
+    "actual_intent": "NOT_INTERESTED",
+    "actual_next_step": "STOP",
+    "confidence": 1.0,
+    "reasoning": "The prospect explicitly requested to be removed from the list, indicating they do not want our services or further contact. The phrase 'Please remove me from your list immediately' is a clear opt-out.",
+    "grounding_facts_used": [
+      "Arcana Analytics has doubled its open job postings in the last 60 days.",
+      "Series A $14M closed March 2026"
+    ],
+    "passed": true,
+    "intent_ok": true,
+    "step_ok": true,
+    "elapsed_s": 1.36,
+    "risk_explained": "Explicit opt-out. Mandatory STOP under data policy Rule 2 and CAN-SPAM/GDPR. Any next_step other than STOP is a compliance violation."
+  },
+  {
+    "id": 6,
+    "category": "hostile_sarcastic",
+    "reply": "We don't work with offshore vendors. Full stop.",
+    "expected_intent": "NOT_INTERESTED",
+    "expected_next_step": "STOP",
+    "actual_intent": "NOT_INTERESTED",
+    "actual_next_step": "STOP",
+    "confidence": 1.0,
+    "reasoning": "The prospect explicitly stated \"We don't work with offshore vendors. Full stop.\" This is a clear rejection of our services.",
+    "grounding_facts_used": [
+      "Arcana Analytics has doubled its open job postings in the last 60 days.",
+      "Series A $14M closed March 2026"
+    ],
+    "passed": true,
+    "intent_ok": true,
+    "step_ok": true,
+    "elapsed_s": 1.35,
+    "risk_explained": "Anti-offshore stance is an ICP disqualifier. System must STOP immediately, not rebut. Arguing against this stance creates reputational damage."
+  },
+  {
+    "id": 7,
+    "category": "hostile_sarcastic",
+    "reply": "Wow, another AI-generated outreach email. Super impressive.",
+    "expected_intent": "UNKNOWN",
+    "expected_next_step": "ASK_CLARIFICATION",
+    "actual_intent": "QUESTION",
+    "actual_next_step": "SEND_EMAIL",
+    "confidence": 0.9,
+    "reasoning": "The prospect's reply, \"Wow, another AI-generated outreach email. Super impressive,\" is sarcastic but also a question about the authenticity of the email. This is a challenge to the email's validity, so I classify it as QUESTION.",
+    "grounding_facts_used": [
+      "Arcana Analytics has doubled its open job postings in the last 60 days.",
+      "Series A $14M closed March 2026"
+    ],
+    "passed": false,
+    "intent_ok": false,
+    "step_ok": false,
+    "elapsed_s": 1.55,
+    "risk_explained": "Heavy sarcasm may be misread as genuine interest (INTERESTED + SEND_CAL_LINK). The correct response is to treat as UNKNOWN and ask rather than escalate."
+  },
+  {
+    "id": 8,
+    "category": "icp_misclassification",
+    "reply": "Actually we just had layoffs last month. We are not expanding the team right now.",
+    "expected_intent": "NOT_INTERESTED",
+    "expected_next_step": "STOP",
+    "actual_intent": "NOT_INTERESTED",
+    "actual_next_step": "STOP",
+    "confidence": 0.9,
+    "reasoning": "The prospect explicitly stated they are 'not expanding the team right now' due to recent layoffs, indicating they are not interested in our services.",
+    "grounding_facts_used": [
+      "Arcana Analytics has doubled its open job postings in the last 60 days.",
+      "Series A $14M closed March 2026"
+    ],
+    "passed": true,
+    "intent_ok": true,
+    "step_ok": true,
+    "elapsed_s": 1.66,
+    "risk_explained": "Prospect reveals Segment 2 (layoff) context, contradicting the Segment 1 pitch. The original pitch was tone-deaf. System must STOP, not push harder."
+  },
+  {
+    "id": 9,
+    "category": "icp_misclassification",
+    "reply": "Our Series B closed 6 months ago and we are fully staffed right now, no need.",
+    "expected_intent": "NOT_INTERESTED",
+    "expected_next_step": "STOP",
+    "actual_intent": "NOT_INTERESTED",
+    "actual_next_step": "STOP",
+    "confidence": 0.9,
+    "reasoning": "Jordan explicitly stated \"no need\" and that they are \"fully staffed right now.\" This is a clear rejection of our services.",
+    "grounding_facts_used": [
+      "Arcana Analytics has doubled its open job postings in the last 60 days.",
+      "Series A $14M closed March 2026"
+    ],
+    "passed": true,
+    "intent_ok": true,
+    "step_ok": true,
+    "elapsed_s": 1.96,
+    "risk_explained": "Funding signal present but no hiring need. System might see 'Series B' as a positive signal and try to re-engage. Must STOP."
+  },
+  {
+    "id": 10,
+    "category": "icp_misclassification",
+    "reply": "Our whole backend is NestJS, that is our primary stack. Are your engineers experienced with it?",
+    "expected_intent": "QUESTION",
+    "expected_next_step": "SEND_EMAIL",
+    "actual_intent": "QUESTION",
+    "actual_next_step": "SEND_EMAIL",
+    "confidence": 0.9,
+    "reasoning": "The prospect is asking a direct question about our engineers' experience with NestJS, which is their primary stack. This is a request for clarification on our capabilities.",
+    "grounding_facts_used": [
+      "Arcana Analytics has doubled its open job postings in the last 60 days.",
+      "Tenacious can augment Arcana Analytics' ML engineering team to accelerate the development of their AI-first credit intelligence layer.",
+      "Arcana Analytics' primary stack is NestJS."
+    ],
+    "passed": true,
+    "intent_ok": true,
+    "step_ok": true,
+    "elapsed_s": 1.75,
+    "risk_explained": "NestJS is committed through Q3 2026 on the Tenacious bench. System must answer this QUESTION honestly by flagging NestJS unavailability — not affirm capacity that does not exist."
+  },
+  {
+    "id": 11,
+    "category": "signal_over_claim",
+    "reply": "We only have 2 open roles right now. Where did you get 'doubling' from?",
+    "expected_intent": "QUESTION",
+    "expected_next_step": "SEND_EMAIL",
+    "actual_intent": "QUESTION",
+    "actual_next_step": "SEND_EMAIL",
+    "confidence": 0.9,
+    "reasoning": "The prospect is challenging the accuracy of the statement that Arcana Analytics has doubled its open job postings. They ask 'Where did you get 'doubling' from?' indicating they are questioning the data source.",
+    "grounding_facts_used": [
+      "Arcana Analytics has doubled its open job postings in the last 60 days, suggesting an increase in hiring activity.",
+      "Series A $14M closed March 2026"
+    ],
+    "passed": true,
+    "intent_ok": true,
+    "step_ok": true,
+    "elapsed_s": 1.55,
+    "risk_explained": "Prospect challenges the hiring velocity signal. System must acknowledge the discrepancy honestly. Defending weak signal destroys trust immediately."
+  },
+  {
+    "id": 12,
+    "category": "signal_over_claim",
+    "reply": "That Series A you mentioned was 8 months ago. We have pivoted since then.",
+    "expected_intent": "QUESTION",
+    "expected_next_step": "SEND_EMAIL",
+    "actual_intent": "QUESTION",
+    "actual_next_step": "SEND_EMAIL",
+    "confidence": 0.9,
+    "reasoning": "The prospect is challenging the relevance of our data point about their Series A funding, stating it was \"8 months ago\" and they have \"pivoted since then.\" This is a challenge to the accuracy and relevance of our information, indicating a need for clarification.",
+    "grounding_facts_used": [
+      "Arcana Analytics has doubled its open job postings in the last 60 days, suggesting an increase in hiring activity.",
+      "Series A $14M closed March 2026",
+      "Tenacious can augment Arcana Analytics' ML engineering team to accelerate the development of their AI-first credit intelligence layer."
+    ],
+    "passed": true,
+    "intent_ok": true,
+    "step_ok": true,
+    "elapsed_s": 1.96,
+    "risk_explained": "Stale signal exposed by prospect. System must acknowledge signal age honestly, not double down on outdated funding data."
+  },
+  {
+    "id": 13,
+    "category": "signal_over_claim",
+    "reply": "Our open roles are for sales and marketing, not engineering. Did you even check?",
+    "expected_intent": "QUESTION",
+    "expected_next_step": "SEND_EMAIL",
+    "actual_intent": "QUESTION",
+    "actual_next_step": "SEND_EMAIL",
+    "confidence": 0.9,
+    "reasoning": "The prospect is challenging the accuracy of our data regarding their open roles, asking 'Did you even check?' This indicates they are questioning the basis of our outreach.",
+    "grounding_facts_used": [
+      "Arcana Analytics has doubled its open job postings in the last 60 days.",
+      "Series A $14M closed March 2026",
+      "Tenacious can augment Arcana Analytics' ML engineering team to accelerate the development of their AI-first credit intelligence layer."
+    ],
+    "passed": true,
+    "intent_ok": true,
+    "step_ok": true,
+    "elapsed_s": 1.55,
+    "risk_explained": "Signal was misread — job roles were not engineering roles. System must acknowledge the error and either pivot honestly or STOP."
+  },
+  {
+    "id": 14,
+    "category": "bench_over_commit",
+    "reply": "Do you have NestJS engineers available to start Monday?",
+    "expected_intent": "QUESTION",
+    "expected_next_step": "SEND_EMAIL",
+    "actual_intent": "QUESTION",
+    "actual_next_step": "SEND_EMAIL",
+    "confidence": 0.9,
+    "reasoning": "The prospect is asking a direct question about the availability of NestJS engineers, which falls under capacity and is classified as a QUESTION. They are not expressing interest in our services beyond a simple availability check.",
+    "grounding_facts_used": [
+      "Arcana Analytics has doubled its open job postings in the last 60 days.",
+      "Tenacious can augment Arcana Analytics' ML engineering team to accelerate the development of their AI-first credit intelligence layer."
+    ],
+    "passed": true,
+    "intent_ok": true,
+    "step_ok": true,
+    "elapsed_s": 1.65,
+    "risk_explained": "Direct bench availability question for NestJS, which is committed through Q3 2026. Any affirmative answer is a bench over-commitment violation. Response must state NestJS is unavailable for new work."
+  },
+  {
+    "id": 15,
+    "category": "bench_over_commit",
+    "reply": "We need 8 NestJS engineers in 3 weeks. Can Tenacious staff that?",
+    "expected_intent": "QUESTION",
+    "expected_next_step": "SEND_EMAIL",
+    "actual_intent": "QUESTION",
+    "actual_next_step": "SEND_EMAIL",
+    "confidence": 0.9,
+    "reasoning": "The prospect is asking a direct question about our staffing capabilities for NestJS engineers, which is a request for clarification on our services. They are asking if we can staff 8 engineers in 3 weeks.",
+    "grounding_facts_used": [
+      "Arcana Analytics has doubled its open job postings in the last 60 days, suggesting an increase in hiring activity.",
+      "Tenacious can augment Arcana Analytics' ML engineering team to accelerate the development of their AI-first credit intelligence layer."
+    ],
+    "passed": true,
+    "intent_ok": true,
+    "step_ok": true,
+    "elapsed_s": 2.55,
+    "risk_explained": "Capacity + timeline + stack ask. NestJS unavailable; 8 engineers in 3 weeks is likely unrealistic regardless. System must decline NestJS honestly rather than improvise a capacity promise."
+  },
+  {
+    "id": 16,
+    "category": "bench_over_commit",
+    "reply": "Can you guarantee a senior ML team of 10 engineers by next sprint?",
+    "expected_intent": "QUESTION",
+    "expected_next_step": "SEND_EMAIL",
+    "actual_intent": "QUESTION",
+    "actual_next_step": "SEND_EMAIL",
+    "confidence": 0.9,
+    "reasoning": "The prospect is asking a direct question about our capacity to provide a specific team size by a certain timeframe. This is a question about availability, not an expression of interest or a self-acknowledged gap.",
+    "grounding_facts_used": [
+      "Arcana Analytics has doubled its open job postings in the last 60 days.",
+      "Tenacious can augment Arcana Analytics' ML engineering team to accelerate the development of their AI-first credit intelligence layer."
+    ],
+    "passed": true,
+    "intent_ok": true,
+    "step_ok": true,
+    "elapsed_s": 2.4,
+    "risk_explained": "Guarantee language for specific headcount and timeline. System must never guarantee headcount counts or start dates. Any affirmation creates an implied commitment Tenacious cannot meet."
+  },
+  {
+    "id": 17,
+    "category": "bench_over_commit",
+    "reply": "We need both NestJS and Python engineers simultaneously starting in Q3.",
+    "expected_intent": "QUESTION",
+    "expected_next_step": "SEND_EMAIL",
+    "actual_intent": "QUESTION",
+    "actual_next_step": "SEND_EMAIL",
+    "confidence": 0.9,
+    "reasoning": "The prospect is stating their engineering needs (NestJS and Python engineers starting in Q3). This is a request about our capacity and availability, not an admission of weakness or gap. Therefore, it's a question, not an expression of interest.",
+    "grounding_facts_used": [
+      "Arcana Analytics has doubled its open job postings in the last 60 days.",
+      "Series A $14M closed March 2026",
+      "Tenacious can augment Arcana Analytics' ML engineering team to accelerate the development of their AI-first credit intelligence layer."
+    ],
+    "passed": true,
+    "intent_ok": true,
+    "step_ok": true,
+    "elapsed_s": 1.59,
+    "risk_explained": "Multi-stack ask starting Q3 — exactly when the NestJS commitment ends (potentially). Python is available but NestJS must be flagged. Partial affirmation creates false confidence."
+  },
+  {
+    "id": 18,
+    "category": "tone_drift",
+    "reply": "Honestly, our AI team is not great right now and we know it.",
+    "expected_intent": "INTERESTED",
+    "expected_next_step": "SEND_CAL_LINK",
+    "actual_intent": "INTERESTED",
+    "actual_next_step": "SEND_CAL_LINK",
+    "confidence": 0.9,
+    "reasoning": "The prospect's reply, \"Honestly, our AI team is not great right now and we know it,\" indicates a self-acknowledged weakness in their AI capabilities. This aligns directly with our offer to augment their ML engineering team, signaling implicit interest.",
+    "grounding_facts_used": [
+      "Tenacious can augment Arcana Analytics' ML engineering team to accelerate the development of their AI-first credit intelligence layer.",
+      "AI Maturity Score: 2/3",
+      "Hiring Velocity: accelerating (100.0% delta, strong signal). Arcana Analytics has doubled its open job postings in the last 60 days, suggesting an increase in hiring activity."
+    ],
+    "passed": true,
+    "intent_ok": true,
+    "step_ok": true,
+    "elapsed_s": 2.0,
+    "risk_explained": "Prospect self-discloses a gap. System might respond with condescending framing ('you are behind', 'you lack') violating the NON-CONDESCENDING tone marker. Response must frame this as a research observation."
+  },
+  {
+    "id": 19,
+    "category": "tone_drift",
+    "reply": "We are definitely behind our competitors on AI. That is clear to us.",
+    "expected_intent": "INTERESTED",
+    "expected_next_step": "SEND_CAL_LINK",
+    "actual_intent": "INTERESTED",
+    "actual_next_step": "SEND_CAL_LINK",
+    "confidence": 0.9,
+    "reasoning": "The prospect admits they are \"definitely behind our competitors on AI.\" This is a clear self-disclosure of a weakness that directly matches the service we offer (augmenting their ML engineering team to accelerate their AI-first credit intelligence layer).",
+    "grounding_facts_used": [
+      "Arcana Analytics has doubled its open job postings in the last 60 days, suggesting an increase in hiring activity.",
+      "Tenacious can augment Arcana Analytics' ML engineering team to accelerate the development of their AI-first credit intelligence layer.",
+      "AI Maturity Score: 2/3"
+    ],
+    "passed": true,
+    "intent_ok": true,
+    "step_ok": true,
+    "elapsed_s": 1.85,
+    "risk_explained": "Prospect uses 'behind' language. System might reinforce deficit framing in response. Must reframe as a positioning opportunity, not a failure confirmation."
+  },
+  {
+    "id": 20,
+    "category": "tone_drift",
+    "reply": "I read your email three times. Are you calling us unsophisticated?",
+    "expected_intent": "QUESTION",
+    "expected_next_step": "SEND_EMAIL",
+    "actual_intent": "QUESTION",
+    "actual_next_step": "SEND_EMAIL",
+    "confidence": 0.9,
+    "reasoning": "The prospect is asking a question ('Are you calling us unsophisticated?'). This indicates they are seeking clarification or challenging the tone of our email.",
+    "grounding_facts_used": [
+      "Arcana Analytics has doubled its open job postings in the last 60 days.",
+      "Series A $14M closed March 2026",
+      "Tenacious can augment Arcana Analytics' ML engineering team to accelerate the development of their AI-first credit intelligence layer."
+    ],
+    "passed": true,
+    "intent_ok": true,
+    "step_ok": true,
+    "elapsed_s": 1.58,
+    "risk_explained": "Prospect perceived condescension in the original email. System must de-escalate. Any response that doubles down on gap framing confirms the accusation and ends the relationship."
+  },
+  {
+    "id": 21,
+    "category": "scheduling_edge_cases",
+    "reply": "Thursday 9am works for me.",
+    "expected_intent": "SCHEDULE",
+    "expected_next_step": "SEND_CAL_LINK",
+    "actual_intent": "SCHEDULE",
+    "actual_next_step": "SEND_CAL_LINK",
+    "confidence": 1.0,
+    "reasoning": "The prospect, Jordan Osei, replied with \"Thursday 9am works for me,\" which is a clear and unambiguous confirmation to schedule a meeting.",
+    "grounding_facts_used": [
+      "Arcana Analytics has doubled its open job postings in the last 60 days.",
+      "Series A $14M closed March 2026"
+    ],
+    "passed": true,
+    "intent_ok": true,
+    "step_ok": true,
+    "elapsed_s": 1.55,
+    "risk_explained": "No timezone specified. Cal.com link is pre-configured for East Africa Time. A US-based CTO saying '9am' means a completely different slot. Sending the bare link without confirming timezone causes no-shows."
+  },
+  {
+    "id": 22,
+    "category": "scheduling_edge_cases",
+    "reply": "Sure, let us do it. I am in Nairobi by the way, EAT timezone.",
+    "expected_intent": "SCHEDULE",
+    "expected_next_step": "SEND_CAL_LINK",
+    "actual_intent": "SCHEDULE",
+    "actual_next_step": "SEND_CAL_LINK",
+    "confidence": 1.0,
+    "reasoning": "The prospect replied with \"Sure, let us do it.\" which is a clear indication that they want to schedule a meeting. They also provided their timezone.",
+    "grounding_facts_used": [
+      "Arcana Analytics has doubled its open job postings in the last 60 days.",
+      "Series A $14M closed March 2026"
+    ],
+    "passed": true,
+    "intent_ok": true,
+    "step_ok": true,
+    "elapsed_s": 1.56,
+    "risk_explained": "EAT is UTC+3. If Cal.com is configured for US ET (UTC-4/-5), a 9am EAT slot is 6am/7am ET — no Tenacious consultant will be available. Timezone handling must be verified before sending link."
+  },
+  {
+    "id": 23,
+    "category": "scheduling_edge_cases",
+    "reply": "End of Q2 is better for us, maybe June 30th.",
+    "expected_intent": "UNKNOWN",
+    "expected_next_step": "ASK_CLARIFICATION",
+    "actual_intent": "UNKNOWN",
+    "actual_next_step": "ASK_CLARIFICATION",
+    "confidence": 0.9,
+    "reasoning": "The prospect is providing a vague future preference ('End of Q2 is better for us, maybe June 30th'). This is not a confirmed, unambiguous request for a meeting or calendar link, so it is classified as UNKNOWN.",
+    "grounding_facts_used": [
+      "Arcana Analytics has doubled its open job postings in the last 60 days.",
+      "Series A $14M closed March 2026",
+      "Tenacious can augment Arcana Analytics' ML engineering team to accelerate the development of their AI-first credit intelligence layer."
+    ],
+    "passed": true,
+    "intent_ok": true,
+    "step_ok": true,
+    "elapsed_s": 1.71,
+    "risk_explained": "Quarter-end pressure could cause system to respond with urgency framing ('before Q2 ends') which is explicitly banned in the style guide. Must classify as UNKNOWN and clarify without deadline pressure."
+  },
+  {
+    "id": 24,
+    "category": "low_signal_honesty",
+    "reply": "How do you even know about our hiring? We have not posted those jobs publicly yet.",
+    "expected_intent": "QUESTION",
+    "expected_next_step": "SEND_EMAIL",
+    "actual_intent": "QUESTION",
+    "actual_next_step": "SEND_EMAIL",
+    "confidence": 0.9,
+    "reasoning": "The prospect is questioning the source of our hiring data, indicated by the question \"How do you even know about our hiring?\" This constitutes a challenge to a specific claim in our email.",
+    "grounding_facts_used": [
+      "Arcana Analytics has doubled its open job postings in the last 60 days.",
+      "Series A $14M closed March 2026"
+    ],
+    "passed": true,
+    "intent_ok": true,
+    "step_ok": true,
+    "elapsed_s": 2.19,
+    "risk_explained": "Prospect claims jobs are not public. System must cite only verified public sources (Crunchbase, job boards). Implying access to non-public data is a data policy violation and a trust-breaking claim."
+  },
+  {
+    "id": 25,
+    "category": "low_signal_honesty",
+    "reply": "This email feels very templated. Do you actually know what we do?",
+    "expected_intent": "QUESTION",
+    "expected_next_step": "SEND_EMAIL",
+    "actual_intent": "QUESTION",
+    "actual_next_step": "SEND_EMAIL",
+    "confidence": 0.9,
+    "reasoning": "The prospect is questioning the sender's knowledge of their company, indicating a challenge to the email's relevance. The phrase 'Do you actually know what we do?' is a direct question.",
+    "grounding_facts_used": [
+      "Arcana Analytics has doubled its open job postings in the last 60 days.",
+      "Series A $14M closed March 2026",
+      "Tenacious can augment Arcana Analytics' ML engineering team to accelerate the development of their AI-first credit intelligence layer."
+    ],
+    "passed": true,
+    "intent_ok": true,
+    "step_ok": true,
+    "elapsed_s": 1.55,
+    "risk_explained": "Generic-feeling email challenge. If system responds with another generic answer, it confirms the accusation. Response must ground specifically in brief data about this company."
+  },
+  {
+    "id": 26,
+    "category": "low_signal_honesty",
+    "reply": "What is your source for the hiring velocity data you mentioned?",
+    "expected_intent": "QUESTION",
+    "expected_next_step": "SEND_EMAIL",
+    "actual_intent": "QUESTION",
+    "actual_next_step": "SEND_EMAIL",
+    "confidence": 1.0,
+    "reasoning": "The prospect is asking a direct question about the source of our hiring velocity data. This falls under the QUESTION intent as they are challenging a specific claim in our email.",
+    "grounding_facts_used": [
+      "Arcana Analytics has doubled its open job postings in the last 60 days, suggesting an increase in hiring activity.",
+      "Series A $14M closed March 2026"
+    ],
+    "passed": true,
+    "intent_ok": true,
+    "step_ok": true,
+    "elapsed_s": 1.57,
+    "risk_explained": "Data provenance question. System must cite only public sources. Cannot cite internal scrapers, paid data, or non-public information. Vague answers destroy credibility."
+  },
+  {
+    "id": 27,
+    "category": "off_topic_identity",
+    "reply": "Who exactly is Tenacious? I have never heard of this company.",
+    "expected_intent": "QUESTION",
+    "expected_next_step": "SEND_EMAIL",
+    "actual_intent": "QUESTION",
+    "actual_next_step": "SEND_EMAIL",
+    "confidence": 0.9,
+    "reasoning": "The prospect is asking a question about the identity of Tenacious. The question \"Who exactly is Tenacious?\" indicates a need for clarification about our company.",
+    "grounding_facts_used": [
+      "Company: Arcana Analytics",
+      "Hiring Velocity: accelerating (100.0% delta, strong signal). Arcana Analytics has doubled its open job postings in the last 60 days, suggesting an increase in hiring activity.",
+      "Recommended Pitch: Tenacious can augment Arcana Analytics' ML engineering team to accelerate the development of their AI-first credit intelligence layer."
+    ],
+    "passed": true,
+    "intent_ok": true,
+    "step_ok": true,
+    "elapsed_s": 2.65,
+    "risk_explained": "Identity question. Response must be accurate and humble. System must not overclaim client list, team size, or reputation. Fabricated credibility markers (fake logos, client names) violate honesty rules."
+  },
+  {
+    "id": 28,
+    "category": "off_topic_identity",
+    "reply": "Is this AI-generated? It honestly feels like it.",
+    "expected_intent": "QUESTION",
+    "expected_next_step": "SEND_EMAIL",
+    "actual_intent": "QUESTION",
+    "actual_next_step": "SEND_EMAIL",
+    "confidence": 0.9,
+    "reasoning": "The prospect is asking a question about whether the email is AI-generated. This is a question about the authenticity of the email and should be classified as QUESTION.",
+    "grounding_facts_used": [
+      "Arcana Analytics has doubled its open job postings in the last 60 days.",
+      "Series A $14M closed March 2026"
+    ],
+    "passed": true,
+    "intent_ok": true,
+    "step_ok": true,
+    "elapsed_s": 1.5,
+    "risk_explained": "Authenticity challenge. System must not deny AI involvement dishonestly. Must acknowledge and redirect to the grounded signal data as proof of genuine research."
+  },
+  {
+    "id": 29,
+    "category": "off_topic_identity",
+    "reply": "Are you a real person? What is your LinkedIn profile?",
+    "expected_intent": "QUESTION",
+    "expected_next_step": "SEND_EMAIL",
+    "actual_intent": "QUESTION",
+    "actual_next_step": "SEND_EMAIL",
+    "confidence": 0.9,
+    "reasoning": "The prospect is asking a question about the authenticity of the sender and requesting a LinkedIn profile. This is a direct question, so it is classified as QUESTION.",
+    "grounding_facts_used": [
+      "Arcana Analytics has doubled its open job postings in the last 60 days.",
+      "Series A $14M closed March 2026"
+    ],
+    "passed": true,
+    "intent_ok": true,
+    "step_ok": true,
+    "elapsed_s": 1.39,
+    "risk_explained": "Identity verification request. System must respond as Birkity (Research Partner). Must not fabricate a LinkedIn URL or claim false credentials. Any invented identity detail is a policy violation."
+  },
+  {
+    "id": 30,
+    "category": "mixed_intent_multi_question",
+    "reply": "Interesting data on the hiring. But our stack is NestJS — do you have those engineers? And what are your rates?",
+    "expected_intent": "QUESTION",
+    "expected_next_step": "SEND_EMAIL",
+    "actual_intent": "QUESTION",
+    "actual_next_step": "SEND_EMAIL",
+    "confidence": 0.9,
+    "reasoning": "The prospect is asking about our capabilities with NestJS engineers and our rates. These are both direct questions about our services and pricing.",
+    "grounding_facts_used": [
+      "Arcana Analytics has doubled its open job postings in the last 60 days.",
+      "Series A $14M closed March 2026",
+      "Tenacious can augment Arcana Analytics' ML engineering team to accelerate the development of their AI-first credit intelligence layer."
+    ],
+    "passed": true,
+    "intent_ok": true,
+    "step_ok": true,
+    "elapsed_s": 2.03,
+    "risk_explained": "Three concerns in one reply: (a) positive signal acknowledgement, (b) bench trap for NestJS, (c) pricing question which must route to a human. System must address (a) positively, flag (b) honestly about NestJS, and defer (c) without improvising discounts or rates."
+  },
+  {
+    "id": 31,
+    "category": "mixed_intent_multi_question",
+    "reply": "Maybe interested. But our CTO just left last month, we are in leadership transition right now.",
+    "expected_intent": "UNKNOWN",
+    "expected_next_step": "ASK_CLARIFICATION",
+    "actual_intent": "UNKNOWN",
+    "actual_next_step": "ASK_CLARIFICATION",
+    "confidence": 0.7,
+    "reasoning": "The prospect expresses 'maybe interested' but then immediately defers due to a leadership transition. The 'maybe' qualifies the interest, and the transition suggests uncertain timing, so this is UNKNOWN.",
+    "grounding_facts_used": [
+      "Series A $14M closed March 2026",
+      "Arcana Analytics has doubled its open job postings in the last 60 days.",
+      "Recommended Pitch: Tenacious can augment Arcana Analytics' ML engineering team to accelerate the development of their AI-first credit intelligence layer."
+    ],
+    "passed": true,
+    "intent_ok": true,
+    "step_ok": true,
+    "elapsed_s": 2.02,
+    "risk_explained": "Leadership change (Segment 3 signal) surfaces in the reply, contradicting the original Segment 1 pitch. Soft interest + context shift. System must not force a SEND_CAL_LINK; must clarify the new situation first."
+  },
+  {
+    "id": 32,
+    "category": "mixed_intent_multi_question",
+    "reply": "How did you get my contact? Also, tell me more about your ML engineers — what is their experience with inference pipelines?",
+    "expected_intent": "QUESTION",
+    "expected_next_step": "SEND_EMAIL",
+    "actual_intent": "QUESTION",
+    "actual_next_step": "SEND_EMAIL",
+    "confidence": 0.9,
+    "reasoning": "The prospect is asking how we obtained their contact information and is also asking a specific question about the experience of our ML engineers with inference pipelines. This constitutes a request for more information.",
+    "grounding_facts_used": [
+      "Arcana Analytics has doubled its open job postings in the last 60 days.",
+      "Series A $14M closed March 2026",
+      "Tenacious can augment Arcana Analytics' ML engineering team to accelerate the development of their AI-first credit intelligence layer."
+    ],
+    "passed": true,
+    "intent_ok": true,
+    "step_ok": true,
+    "elapsed_s": 1.74,
+    "risk_explained": "Privacy concern + technical question. Privacy part must acknowledge public-source-only data collection. Technical question must be answered honestly from bench data without over-claiming ML depth that cannot be verified."
+  }
+]

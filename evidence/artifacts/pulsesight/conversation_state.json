@@ -1,0 +1,61 @@
+{
+  "slug": "pulsesight",
+  "company": "PulseSight",
+  "prospect_email": "jordan.kim@sink.example.com",
+  "status": "booked",
+  "turns": [
+    {
+      "turn": 0,
+      "from": "agent",
+      "type": "outbound_email",
+      "subject": "Context: Series A $9M",
+      "body": "Jordan,\n\nPulseSight's open job postings have increased 133% in the last 60 days.\n\nCompanies scaling after Series A often struggle to find engineers with specific ML infrastructure experience.\n\nTenacious provides pre-vetted engineers already working inside the leading AI infrastructure companies.\n\nWhat are your biggest bottlenecks to scaling the engineering team right now?\n\nBirkity\nResearch Partner, Tenacious Intelligence Corporation\ngettenacious.com",
+      "grounding_facts": [
+        "PulseSight's open job postings have increased significantly in the last 60 days, suggesting an acceleration in hiring.",
+        "Series A $9M"
+      ],
+      "icp_segment_used": "Segment 1",
+      "sink_mode": true,
+      "timestamp": "2026-04-28T07:15:11.065725+00:00"
+    },
+    {
+      "turn": 1,
+      "from": "prospect",
+      "reply_text": "oh niceee . want to hear more",
+      "channel": "email",
+      "interpretation": {
+        "intent": "INTERESTED",
+        "next_step": "SEND_CAL_LINK",
+        "confidence": 0.9,
+        "reasoning": "The prospect replied \"want to hear more\", which is a clear positive signal indicating interest in learning more about our services.",
+        "grounding_facts_used": [
+          "PulseSight's open job postings have increased 133% in the last 60 days.",
+          "Series A $9M",
+          "Recommended Pitch: Tenacious can help PulseSight scale its engineering team quickly to capitalize on its recent funding and address the ML infrastructure market."
+        ]
+      },
+      "routing": {
+        "actions": [
+          "hubspot_note_added: contact_id=476700037876",
+          "hubspot_status_updated: IN_PROGRESS",
+          "cal_link_sent: sent"
+        ],
+        "errors": [],
+        "cal_link": "https://cal.com/birkity-famsl2/intro-call-engineering-scaling?name=Jordan+Kim&email=jordan.kim%40sink.example.com&notes=Tenacious+can+help+PulseSight+scale+its+engineering+team+quickly+to+capitalize+on+its+recent+funding+and+address+the+ML+infrastructure+market."
+      },
+      "sms": null,
+      "timestamp": "2026-04-28T07:16:27.538438+00:00"
+    },
+    {
+      "turn": 2,
+      "from": "agent",
+      "type": "cal_link_email",
+      "subject": "Re: Booking link - PulseSight",
+      "body": "Jordan Kim,\n\nGreat to hear from you. Here is a link to book a time:\n\nhttps://cal.com/birkity-famsl2/intro-call-engineering-scaling?name=Jordan+Kim&email=jordan.kim%40sink.example.com&notes=Tenacious+can+help+PulseSight+scale+its+engineering+team+quickly+to+capitalize+on+its+recent+funding+and+address+the+ML+infrastructure+market.\n\nPick any slot that works -- looking forward to the conversation.\n\nBirkity\nResearch Partner, Tenacious Intelligence Corporation\ngettenacious.com",
+      "timestamp": "2026-04-28T07:16:27.538438+00:00"
+    }
+  ],
+  "started_at": "2026-04-28T07:15:11.065725+00:00",
+  "last_updated": "2026-04-28T07:16:27.538438+00:00",
+  "outcome": "booked"
+}

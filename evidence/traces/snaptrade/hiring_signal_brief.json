@@ -1,0 +1,52 @@
+{
+  "tenacious_status": "draft",
+  "company": "SnapTrade",
+  "hiring_velocity": {
+    "direction": "decelerating",
+    "delta_pct": -60.0,
+    "signal_strength": "moderate",
+    "observation": "Job postings have decreased in the last 60 days."
+  },
+  "budget_urgency": {
+    "level": "low",
+    "signal": "Seed round $3.2M in 2021",
+    "runway_pressure": "Limited funding may constrain expansion."
+  },
+  "cost_pressure": {
+    "present": false,
+    "signal": null,
+    "icp_segment_implication": null
+  },
+  "engineering_maturity": {
+    "stack_sophistication": "medium",
+    "detected_stack": [
+      "Python",
+      "REST API",
+      "AWS",
+      "PostgreSQL"
+    ],
+    "bench_match_notes": "Standard stack aligns with bench capabilities."
+  },
+  "ai_maturity_score": 0,
+  "ai_maturity_rationale": {
+    "ai_roles_found": [],
+    "modern_ml_stack_signals": [],
+    "executive_ai_signals": "none",
+    "named_ai_leadership": false
+  },
+  "confidence": 0.7,
+  "icp_segment": "ambiguous",
+  "recommended_pitch_angle": "Tenacious can augment SnapTrade's engineering team to accelerate API development.",
+  "bench_match": {
+    "required_stacks": [
+      "Python",
+      "AWS",
+      "PostgreSQL"
+    ],
+    "bench_available": true
+  },
+  "honesty_flags": {
+    "weak_hiring_velocity_signal": false,
+    "bench_gap_detected": false
+  }
+}

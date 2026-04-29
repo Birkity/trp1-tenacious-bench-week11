@@ -1,0 +1,8 @@
+{
+  "name": "Jordan Kim",
+  "role": "VP of Engineering",
+  "email": "jordan.kim@sink.example.com",
+  "phone": "+15559990042",
+  "company": "PulseSight",
+  "_policy_note": "Synthetic prospect. Rule 2: email resolves to program sink, not a real person. Phone is a non-routable test number."
+}

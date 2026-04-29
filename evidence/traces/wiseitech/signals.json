@@ -1,0 +1,34 @@
+{
+  "company_name": "WiseiTech",
+  "industries": ["Analytics", "Big Data", "Machine Learning"],
+  "headcount": "11-50",
+  "description": "WISEiTECH builds data analytics and machine learning platforms for enterprise clients, focusing on actionable insights from large-scale business data.",
+  "funding_info": "Early-stage company. No public funding rounds detected.",
+  "layoffs": "No layoff events found in last 120 days.",
+  "jobs_now": 0,
+  "jobs_60_days": 1,
+  "tech_stack": ["Python", "Big Data", "Machine Learning", "Analytics"],
+  "ai_roles": [],
+  "leadership_changes": "No leadership changes detected in last 90 days.",
+  "recent_news": "No significant news detected in last 30 days.",
+  "competitor_signals": [
+    {
+      "name": "Databricks",
+      "funding": "Series I $500M",
+      "tech_stack": ["Python", "Spark", "MLflow", "Delta Lake", "Kubernetes"],
+      "ai_maturity_score": 3
+    },
+    {
+      "name": "Dataiku",
+      "funding": "Series F $200M",
+      "tech_stack": ["Python", "R", "Kubernetes", "TensorFlow", "PyTorch"],
+      "ai_maturity_score": 3
+    },
+    {
+      "name": "Alteryx",
+      "funding": "Public (NYSE: AYX)",
+      "tech_stack": ["Python", "R", "Spark", "AWS"],
+      "ai_maturity_score": 2
+    }
+  ]
+}

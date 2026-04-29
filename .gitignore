@@ -1,0 +1,33 @@
+﻿# Local environment
+.env
+.venv/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.ipynb_checkpoints/
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Challenge/source docs kept locally, not committed
+*.doc
+*.docx
+docs/challenge/TRP1 Challenge Week 11_  Sales Agent Evaluation Bench.md
+seeds/
+
+# Sealed or sensitive evaluation artifacts
+data/tenacious_bench_v0.1/held_out/*
+!data/tenacious_bench_v0.1/held_out/.gitkeep
+evaluation/ablations/held_out_traces.jsonl
+
+# Logs and temporary outputs
+*.log
+outputs/
+.tmp/

@@ -1,0 +1,61 @@
+{
+  "slug": "arcana",
+  "company": "Arcana Analytics",
+  "prospect_email": "jordan.osei@sink.example.com",
+  "status": "booked",
+  "turns": [
+    {
+      "turn": 0,
+      "from": "agent",
+      "type": "outbound_email",
+      "subject": "Context: Series A $14M closed March 2026",
+      "body": "Jordan,\n\nArcana Analytics has doubled its open job postings in the last 60 days.\n\nCompanies scaling after a Series A often face bottlenecks integrating new ML engineers.\n\nTenacious provides pre-vetted, project-ready ML engineering pods that can deploy in days.\n\nWhat challenges are you encountering scaling your ML engineering team?\n\nBirkity\nResearch Partner, Tenacious Intelligence Corporation\ngettenacious.com",
+      "grounding_facts": [
+        "Arcana Analytics has doubled its open job postings in the last 60 days",
+        "Series A $14M closed March 2026"
+      ],
+      "icp_segment_used": "Segment 1",
+      "sink_mode": true,
+      "timestamp": "2026-04-27T15:27:37.960177+00:00"
+    },
+    {
+      "turn": 1,
+      "from": "prospect",
+      "reply_text": "Hi Birkity,\nThanks for reaching out.\nYou’re right that we’ve been hiring, but our main challenge isn’t capacity — it’s onboarding new ML engineers into an existing stack and getting them productive quickly without slowing current work.\nI’m curious how Tenacious approaches integration with an in-flight ML roadmap rather than just adding headcount.\nHappy to hear more.",
+      "channel": "email",
+      "interpretation": {
+        "intent": "INTERESTED",
+        "next_step": "SEND_CAL_LINK",
+        "confidence": 0.9,
+        "reasoning": "The prospect acknowledges the hiring signal and states their main challenge is onboarding new ML engineers and integrating them into their existing stack. This self-disclosure of a specific pain point related to ML engineering, which is the service we offer, indicates interest.",
+        "grounding_facts_used": [
+          "Arcana Analytics has doubled its open job postings in the last 60 days.",
+          "Series A $14M closed March 2026",
+          "Tenacious provides pre-vetted, project-ready ML engineering pods that can deploy in days."
+        ]
+      },
+      "routing": {
+        "actions": [
+          "hubspot_note_added: contact_id=476267124473",
+          "hubspot_status_updated: IN_PROGRESS",
+          "cal_link_sent: sent"
+        ],
+        "errors": [],
+        "cal_link": "https://cal.com/birkity-famsl2/intro-call-engineering-scaling?name=Jordan+Osei&email=jordan.osei%40sink.example.com&notes=Tenacious+can+augment+Arcana+Analytics%27+ML+engineering+team+to+accelerate+the+development+of+their+AI-first+credit+intelligence+layer."
+      },
+      "sms": null,
+      "timestamp": "2026-04-27T15:44:15.847832+00:00"
+    },
+    {
+      "turn": 2,
+      "from": "agent",
+      "type": "cal_link_email",
+      "subject": "Re: Booking link - Arcana Analytics",
+      "body": "Jordan Osei,\n\nGreat to hear from you. Here is a link to book a time:\n\nhttps://cal.com/birkity-famsl2/intro-call-engineering-scaling?name=Jordan+Osei&email=jordan.osei%40sink.example.com&notes=Tenacious+can+augment+Arcana+Analytics%27+ML+engineering+team+to+accelerate+the+development+of+their+AI-first+credit+intelligence+layer.\n\nPick any slot that works -- looking forward to the conversation.\n\nBirkity\nResearch Partner, Tenacious Intelligence Corporation\ngettenacious.com",
+      "timestamp": "2026-04-27T15:44:15.847832+00:00"
+    }
+  ],
+  "started_at": "2026-04-27T15:27:37.960177+00:00",
+  "last_updated": "2026-04-27T15:44:15.847832+00:00",
+  "outcome": "booked"
+}

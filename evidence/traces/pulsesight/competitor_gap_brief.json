@@ -1,0 +1,17 @@
+{
+  "sector": "AI/ML Infrastructure",
+  "competitors_analyzed": 3,
+  "prospect_ai_score": 2,
+  "prospect_position_in_sector": "above_median",
+  "gaps": [
+    {
+      "practice": "Leveraging Spark for distributed data processing",
+      "evidence_in_top_quartile": "Arize AI and Fiddler AI both utilize Spark in their stacks.",
+      "evidence_at_prospect": "PulseSight's stack does not currently include Spark.",
+      "gap_insight": "Competitors in the top quartile are leveraging Spark for distributed data processing, which PulseSight does not appear to be using.",
+      "confidence": 0.7
+    }
+  ],
+  "overall_confidence": 0.7,
+  "tenacious_status": "draft"
+}

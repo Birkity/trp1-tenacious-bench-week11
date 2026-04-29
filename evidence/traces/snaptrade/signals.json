@@ -1,0 +1,34 @@
+{
+  "company_name": "SnapTrade",
+  "industries": ["Developer APIs", "Developer Tools", "FinTech"],
+  "headcount": "11-50",
+  "description": "SnapTrade provides brokerage connectivity APIs for fintech developers, enabling seamless integration with major brokerages across North America.",
+  "funding_info": "Seed round $3.2M in 2021. No subsequent rounds detected.",
+  "layoffs": "No layoff events found in last 120 days.",
+  "jobs_now": 2,
+  "jobs_60_days": 5,
+  "tech_stack": ["Python", "REST API", "AWS", "PostgreSQL"],
+  "ai_roles": [],
+  "leadership_changes": "No leadership changes detected in last 90 days.",
+  "recent_news": "No significant news detected in last 30 days.",
+  "competitor_signals": [
+    {
+      "name": "Alpaca",
+      "funding": "Series B $50M",
+      "tech_stack": ["Python", "Go", "Kubernetes", "AWS"],
+      "ai_maturity_score": 1
+    },
+    {
+      "name": "Plaid",
+      "funding": "Series D $425M",
+      "tech_stack": ["Python", "React", "AWS", "TensorFlow", "Kubernetes"],
+      "ai_maturity_score": 2
+    },
+    {
+      "name": "Finicity",
+      "funding": "Acquired by Mastercard",
+      "tech_stack": ["Java", "AWS", "Spark"],
+      "ai_maturity_score": 1
+    }
+  ]
+}
