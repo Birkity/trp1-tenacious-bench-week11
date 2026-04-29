@@ -39,13 +39,16 @@ Dev batch files (JSONL tasks) live in:
 
 - data/tenacious_bench_v0.1/dev/trace_derived_batch1.jsonl (75 tasks)
 - data/tenacious_bench_v0.1/dev/programmatic_batch1.jsonl (75 tasks)
-- data/tenacious_bench_v0.1/dev/programmatic_phase2_1_batch1.jsonl (75 tasks)
+
+Semantic edge cases are written to a staging folder:
+
+- data/tenacious_bench_v0.1/dev_synthetic/semantic_edge_cases_batch1.jsonl (60 tasks)
 
 Naming/structure convention used in this repo:
 
 - Dataset partitions are only: data/tenacious_bench_v0.1/{train,dev,held_out}/
-- Within a partition, files follow: <source>_<phase?>_batch<N>.jsonl
-	- Example: programmatic_phase2_1_batch1.jsonl
+- Within a partition, files follow: <source>_<purpose>_batch<N>.jsonl
+	- Example: semantic_edge_cases_batch1.jsonl
 	- Reason: avoids creating extra pseudo-partitions
 
 ### Regenerate Batch 2 (Programmatic, deterministic)
@@ -56,12 +59,13 @@ This does not require any API keys.
 python scripts/generation/programmatic_templates.py
 ```
 
-### Regenerate Phase 2.1 (Programmatic grid, deterministic)
+### Generate Semantic Edge Cases (LLM + evaluator sieve)
 
-This does not require any API keys.
+This uses a small dev-tier model on OpenRouter and keeps only tasks that
+PASS the deterministic evaluator but are semantically wrong.
 
 ```powershell
-python scripts/generation/programmatic_phase2_1.py
+python scripts/generation/synthetic_semantic_edge_cases.py --target 60
 ```
 
 ### Run judge-filter (adds judge_filter + difficulty)
@@ -97,7 +101,7 @@ Present:
 - Act I audit memo: docs/audit_memo.md
 - Methodology draft: docs/methodology.md
 - Schema + evaluator: benchmark/schema.json, benchmark/scoring_evaluator.py
-- Dev tasks (225 total so far): data/tenacious_bench_v0.1/dev/*.jsonl
+- Dev tasks (150 total so far): data/tenacious_bench_v0.1/dev/*.jsonl
 - Generation scripts: scripts/generation/
 - Synthesis memos (common readings): docs/synthesis_memos/
 - Cost log: docs/cost_log.md
