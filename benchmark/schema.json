@@ -250,6 +250,25 @@
           "description": "Human-readable policy for the future LLM judge. Phase 1 uses deterministic obvious-fail checks only."
         }
       }
+    },
+    "difficulty": {
+      "type": "string",
+      "description": "Task difficulty for benchmark stratification.",
+      "enum": ["easy", "medium", "hard"]
+    },
+    "judge_filter": {
+      "type": "object",
+      "description": "LLM-as-a-judge quality scores (1-5 per dimension). Added post-generation; tasks scoring <3 on any dimension should be flagged.",
+      "required": ["model", "input_coherence", "ground_truth_verifiability", "rubric_application_clarity", "passed"],
+      "additionalProperties": true,
+      "properties": {
+        "model": { "type": "string" },
+        "input_coherence":            { "type": "integer", "minimum": 1, "maximum": 5 },
+        "ground_truth_verifiability": { "type": "integer", "minimum": 1, "maximum": 5 },
+        "rubric_application_clarity": { "type": "integer", "minimum": 1, "maximum": 5 },
+        "passed":                     { "type": "boolean" },
+        "notes":                      { "type": "string" }
+      }
     }
   }
 }
