@@ -132,10 +132,10 @@ Tasks scoring below threshold on any dimension are discarded. Difficulty labels 
 
 ### 3.5 Dataset Partitioning
 
-The 250 tasks are split deterministically (seed=42) using a **family-aware shuffle**.
-All tasks from the same company (trace-derived) or the same parameter combo (programmatic
-A/B/C variants) are grouped into one "family" and kept in the same partition. This prevents
-contamination via shared observation text.
+The 257 tasks are split deterministically (seed=42) using a **family-aware shuffle**.
+All tasks from the same company (trace-derived), the same parameter combo (programmatic
+A/B/C variants), or the same company in the synthetic batch are grouped into one "family"
+and kept in the same partition. This prevents contamination via shared observation text.
 
 | Partition | Target | Actual | Purpose | SHA-256 checksum (16 hex) |
 |-----------|--------|--------|---------|--------------------------|
@@ -189,7 +189,7 @@ This benchmark does not use Mechanical Turk, Scale AI, or any other third-party 
 ### 5.3 Future Uses
 
 - **SimPO preference training (Act III)**: The `train/` partition is the source for preference pair generation. Chosen = correct REJECT with rubric reasoning; Rejected = surface PASS with no semantic grounding.
-- **Phase 2 semantic evaluation**: The 60 synthetic semantic edge cases in `dev_synthetic/` are designed to test LLM judges beyond Phase 1 deterministic checks.
+- **Phase 2 semantic evaluation**: The 55 synthetic semantic edge cases in `dev_synthetic/` are designed to test LLM judges beyond Phase 1 deterministic checks.
 
 ---
 
@@ -248,7 +248,7 @@ Research Partner, Tenacious Intelligence Corporation
 
 1. **Single human annotator**: The inter-rater agreement study uses the same person in two rounds. A true multi-annotator study would involve at least two independent labelers.
 
-2. **Phase 1 only**: The deterministic evaluator (Phase 1) does not catch semantic errors — emails that PASS D1–D5 but make unjustified inferences. The 60 synthetic semantic edge cases (`dev_synthetic/`) are designed for Phase 2 evaluation, which requires an LLM judge.
+2. **Phase 1 only**: The deterministic evaluator (Phase 1) does not catch semantic errors — emails that PASS D1–D5 but make unjustified inferences. The 55 synthetic semantic edge cases (`dev_synthetic/`) are designed for Phase 2 evaluation, which requires an LLM judge.
 
 3. **Narrow domain**: The benchmark covers only B2B outbound email for a specific staffing-augmentation ICP. Performance on this benchmark does not generalize to other sales domains.
 
