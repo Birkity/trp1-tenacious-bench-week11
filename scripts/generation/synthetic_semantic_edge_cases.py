@@ -44,7 +44,7 @@ OUT_DIR = ROOT / "data" / "tenacious_bench_v0.1" / "dev_synthetic"
 OUT_FILE = OUT_DIR / "semantic_edge_cases_batch1.jsonl"
 
 OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
-DEFAULT_MODEL = "deepseek/deepseek-v3.2"  # small/cheap model tier on OpenRouter
+DEFAULT_MODEL = "openai/gpt-4o-mini"  # cheap inference tier on OpenRouter
 
 BENCH_SUMMARY = (
     "Python: 7 available (7-day deploy). "

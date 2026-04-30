@@ -40,7 +40,7 @@ INPUT_FILE = ROOT / "data" / "tenacious_bench_v0.1" / "dev" / "trace_derived_bat
 SCHEMA_PATH = ROOT / "benchmark" / "schema.json"
 
 OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
-JUDGE_MODEL = "deepseek/deepseek-v3.2"   # Different family from Gemini (generation model)
+JUDGE_MODEL = "openai/gpt-4o-mini"   # Different family from Gemini (generation model); cheaper than deepseek-v3.2
 PASS_THRESHOLD = 3                        # score >= 3 on all 3 dims = passes filter
 
 # ---------------------------------------------------------------------------
