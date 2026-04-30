@@ -95,7 +95,11 @@ def _task_family(task: dict) -> str:
     For programmatic tasks: A/B/C variants share the same observation. Group
     by the numeric prefix (TB-PROG-007A → TB-PROG-007).
 
-    For adversarial and synthetic tasks: each task is independent.
+    For synthetic tasks: group by company name. Without this, two LLM-generated
+    probes for the same company can land in different partitions and produce
+    cosine similarity violations (near-duplicate held_out/train pairs).
+
+    For adversarial tasks: each task is independent (hand-authored, unique).
     """
     import re
     task_id = task.get("task_id", "")
@@ -111,7 +115,13 @@ def _task_family(task: dict) -> str:
     if m:
         return m.group(1)
 
-    # Adversarial and synthetic: each task is its own family
+    # Synthetic semantic: group by company name so no two probes for the same
+    # company end up in different partitions (prevents near-duplicate cosine violations).
+    if task_id.startswith("TB-SEM") or source_mode in ("synthetic_semantic", "synthetic_semantic_edge_cases"):
+        company = task.get("brief", {}).get("company", task_id)
+        return f"synthetic::{company}"
+
+    # Adversarial: each task is its own family (hand-authored, no observation sharing)
     return task_id
 
 

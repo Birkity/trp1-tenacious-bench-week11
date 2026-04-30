@@ -40,9 +40,9 @@ Each task is a JSON object with the following fields:
 |-------------|--------|-------|-------------|
 | `trace_derived` | TB-TRACE | 75 | Derived from 25 Week 10 company events × 3 variants (A/B/C) |
 | `programmatic` | TB-PROG | 75 | Deterministic templates, 25 parameter combos × 3 variants |
-| `adversarial_hand` | TB-ADV | 40 | Hand-authored edge cases targeting each rubric dimension |
-| `synthetic_semantic_edge_cases` | TB-SEM | 60 | LLM-generated, evaluator-PASS, semantically unjustified |
-| **Total** | | **250** | |
+| `adversarial_hand` | TB-ADV | 52 | Hand-authored edge cases targeting each rubric dimension (TB-ADV-001–052) |
+| `synthetic_semantic_edge_cases` | TB-SEM | 55 | LLM-generated, evaluator-PASS, semantically unjustified |
+| **Total** | | **257** | |
 
 ### 2.3 Task Variants
 
@@ -59,29 +59,30 @@ Adversarial tasks (`TB-ADV`) cover additional failure modes: D3 (signal directio
 ### 2.4 Label Distribution
 
 | Overall Verdict | Count | % |
-|----------------|-------|---|
-| PASS | ~110 | ~44% |
-| REJECT | ~140 | ~56% |
+| --- | --- | --- |
+| PASS | 112 | 44% |
+| REJECT | 145 | 56% |
 
-Difficulty distribution (approximate, post judge-filter):
+Difficulty distribution (post judge-filter; synthetic semantic tasks have no difficulty label):
 
 | Difficulty | Count | % |
-|-----------|-------|---|
-| easy | ~55 | ~22% |
-| medium | ~90 | ~36% |
-| hard | ~105 | ~42% |
+| --- | --- | --- |
+| easy | 43 | 17% |
+| medium | 63 | 25% |
+| hard | 96 | 37% |
+| unlabeled (synthetic) | 55 | 21% |
 
 ### 2.5 Rubric Dimensions
 
 | Code | Dimension | Description | Type |
 |------|-----------|-------------|------|
 | D1 | grounding_fidelity | All numerics in email appear in brief; `bench_available` check | deterministic |
-| D2 | icp_pitch_alignment | Segment="Ambiguous" → no product claim permitted (Phase 1) | deterministic |
+| D2 | icp_pitch_alignment | Phase 1: Ambiguous segment → no product claim; Ambiguous → body must end with `?`. Phase 2: LLM judge checks segment-to-frame alignment (requires `--llm-judge`). | deterministic (Phase 1) / LLM (Phase 2) |
 | D3 | signal_directionality | `delta_pct < -20` → no growth-frame terms in body | deterministic |
-| D4 | tone_compliance | No banned phrases (hyperbole, urgency, meeting-push) | deterministic |
-| D5 | format_compliance | Subject ≤60 chars, body ≤120 words, ≤1 `?`, no URLs, no booking links | deterministic |
+| D4 | tone_compliance | No banned phrases (full style-guide list: 30+ phrases incl. "leverage", "skyrocket", "synergize", etc.); no "bench" word in prospect-facing copy; Ambiguous → must end with `?` | deterministic |
+| D5 | format_compliance | Subject ≤60 chars; approved prefix; body ≤120 words; ≤1 `?`; no URLs; no booking phrases | deterministic |
 
-All five dimensions are computed deterministically by `benchmark/scoring_evaluator.py`. No LLM inference is required at evaluation time.
+Phase 1 dimensions (D1, D3, D4, D5) are fully deterministic. D2 Phase 1 fast-fail is also deterministic. Full D2 segment-frame checking requires the LLM judge (`--llm-judge` flag; uses DeepSeek via OpenRouter).
 
 ---
 
@@ -138,9 +139,9 @@ contamination via shared observation text.
 
 | Partition | Target | Actual | Purpose | SHA-256 checksum (16 hex) |
 |-----------|--------|--------|---------|--------------------------|
-| `train/` | 50% | 123 | Preference pair generation for SimPO training | `942091897fdc47e8` |
-| `dev/` | 30% | 83 | Public evaluation set | `214d6263ff15d26a` |
-| `held_out/` | 20% | 44 | Sealed; used only for final evaluation | `ab4775b484c51846` |
+| `train/` | 50% | 114 | Preference pair generation for SimPO training | `6668fea2735097f6` |
+| `dev/` | 30% | 78 | Public evaluation set | `3637a2857fbba383` |
+| `held_out/` | 20% | 65 | Sealed; used only for final evaluation | `14b14e9650aee2bb` |
 
 Slight deviation from exact 50/30/20 is expected with family-aware splitting (families have
 varying sizes). The split script is `scripts/generation/partition.py` with `RANDOM_SEED = 42`.
@@ -203,17 +204,17 @@ Tenacious-Bench v0.1 is released under **CC-BY-4.0**. Attribution required. Comm
 ```
 data/tenacious_bench_v0.1/
 ├── dev/
-│   ├── trace_derived_batch1.jsonl   (75 tasks)
-│   ├── programmatic_batch1.jsonl    (75 tasks)
-│   └── adversarial_hand_batch1.jsonl (40 tasks)
+│   ├── trace_derived_batch1.jsonl       (75 tasks)
+│   ├── programmatic_batch1.jsonl        (75 tasks)
+│   └── adversarial_hand_batch1.jsonl    (52 tasks, incl. TB-ADV-041–052)
 ├── dev_synthetic/
-│   └── semantic_edge_cases_batch1.jsonl (60 tasks)
+│   └── semantic_edge_cases_batch1.jsonl (55 tasks, 5 removed for "leverage")
 ├── train/
-│   └── tasks.jsonl                  (125 tasks, 50%)
+│   └── tasks.jsonl                      (114 tasks, 44%)
 ├── dev/
-│   └── tasks.jsonl                  (75 tasks, 30%)
-└── held_out/                        ← gitignored
-    └── tasks.jsonl                  (50 tasks, 20%)
+│   └── tasks.jsonl                      (78 tasks, 30%)
+└── held_out/                            ← gitignored
+    └── tasks.jsonl                      (65 tasks, 25%)
 ```
 
 ### 6.3 Held-Out Partition
@@ -278,7 +279,7 @@ Full protocol: `docs/inter_rater_agreement.md`
 Full results: `data/contamination_check.json`
 
 **Check 1 — N-gram Overlap (n=8)**  
-No 8-gram from the held-out partition appears in the train partition. Identical company names and common phrases are filtered by the 8-gram window requirement — no pair of train/held-out tasks shares an 8-token sequence.
+No 8-gram from the held-out partition appears in the train partition. Template n-grams (any 8-gram appearing in ≥ 2 tasks across the full pool) are filtered before comparison — this removes shared velocity-percentage phrases and subject-line boilerplate while preserving genuine company-specific leakage detection. After filtering, max shared n-grams = 0.
 
 **Check 2 — Embedding Similarity**  
 Maximum cosine similarity between any held-out task and any train task is below 0.85. Method: sentence-transformers `all-MiniLM-L6-v2` if available; TF-IDF cosine fallback otherwise. TF-IDF is conservative (overestimates similarity for short texts), so a pass under TF-IDF is a strong pass.
@@ -288,4 +289,4 @@ All hiring velocity observations reference the Feb–Apr 2026 observation window
 
 ---
 
-*Datasheet authored 2026-04-29 by Birkity Mekasha. Updated 2026-04-30 after held-out sealing.*
+*Datasheet authored 2026-04-29 by Birkity Mekasha. Updated 2026-04-30 after held-out sealing and adversarial batch expansion (v0.1 → 257 tasks).*

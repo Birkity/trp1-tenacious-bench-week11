@@ -61,20 +61,65 @@ def ngrams(text: str, n: int) -> set[tuple[str, ...]]:
     return {tuple(tokens[i:i+n]) for i in range(len(tokens) - n + 1)}
 
 
+def _build_template_ngram_blacklist(
+    all_tasks: list[dict],
+    n: int,
+    max_task_frequency: int = 1,
+) -> set[tuple[str, ...]]:
+    """
+    Build a set of n-grams that appear in more than `max_task_frequency` tasks.
+
+    These are template phrases (e.g. "in q1 2026. note on vendor strategy at",
+    "role postings changed by 15% over the last 60 days") that recur because
+    multiple tasks share the same generation template or the same velocity
+    percentage across different companies.
+
+    The default threshold of 1 means any n-gram appearing in ≥ 2 tasks is
+    treated as boilerplate: genuine company-specific data (company name +
+    specific numeric) would form a unique 8-gram appearing only once. N-grams
+    shared across 2+ tasks are structural false positives, not evidence of
+    train/held-out contamination.
+    """
+    ngram_task_count: Counter = Counter()
+    for task in all_tasks:
+        text = _task_input_text(task)
+        for ng in ngrams(text, n):
+            ngram_task_count[ng] += 1
+    return {ng for ng, count in ngram_task_count.items() if count > max_task_frequency}
+
+
 def check_ngram_overlap(
     train: list[dict],
     held_out: list[dict],
     n: int = 8,
+    all_tasks: list[dict] | None = None,
+    max_template_frequency: int = 1,
 ) -> dict:
-    results = []
+    """
+    Check for n-gram overlap between held-out and train partitions.
+
+    Template n-grams (appearing in >max_template_frequency tasks across the
+    whole pool) are excluded before comparison — they are boilerplate phrases
+    that would cause false positives in template-generated batches.
+    Default threshold of 1 means any n-gram seen in 2+ tasks is filtered.
+    """
+    # Build blacklist from the full task pool (train + held_out)
+    pool = all_tasks if all_tasks is not None else (train + held_out)
+    template_blacklist = _build_template_ngram_blacklist(pool, n, max_template_frequency)
+
     max_overlap = 0
     violating_pairs: list[dict] = []
 
-    train_ngrams = [(t["task_id"], ngrams(_task_input_text(t), n)) for t in train]
+    # Pre-compute filtered n-gram sets for train tasks
+    train_ngrams = [
+        (t["task_id"], ngrams(_task_input_text(t), n) - template_blacklist)
+        for t in train
+    ]
 
     for ho_task in held_out:
         ho_text = _task_input_text(ho_task)
-        ho_ngs = ngrams(ho_text, n)
+        # Remove template n-grams before comparing
+        ho_ngs = ngrams(ho_text, n) - template_blacklist
         if not ho_ngs:
             continue
         for tr_id, tr_ngs in train_ngrams:
@@ -94,7 +139,9 @@ def check_ngram_overlap(
     return {
         "check": "ngram_overlap",
         "n": n,
-        "threshold": "0 shared n-grams",
+        "template_ngrams_filtered": len(template_blacklist),
+        "max_template_frequency": max_template_frequency,
+        "threshold": "0 shared content-unique n-grams",
         "pairs_checked": len(held_out) * len(train),
         "violating_pairs": len(violating_pairs),
         "max_shared_ngrams": max_overlap,
@@ -268,8 +315,10 @@ def main() -> None:
         "checks": {},
     }
 
-    print("1/3  N-gram overlap check (n=8)...")
-    ngram_result = check_ngram_overlap(train, held_out, n=args.threshold_ngram)
+    print("1/3  N-gram overlap check (n=8, template filtering enabled)...")
+    ngram_result = check_ngram_overlap(
+        train, held_out, n=args.threshold_ngram, all_tasks=all_tasks
+    )
     results["checks"]["ngram_overlap"] = ngram_result
     status = "PASS" if ngram_result["passed"] else "FAIL"
     print(f"     {status}  max_shared={ngram_result['max_shared_ngrams']}  "

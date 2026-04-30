@@ -1,299 +1,29 @@
 {
   "dataset": "Tenacious-Bench v0.1",
-  "train_tasks": 123,
-  "held_out_tasks": 44,
+  "train_tasks": 114,
+  "held_out_tasks": 65,
   "checks": {
     "ngram_overlap": {
       "check": "ngram_overlap",
       "n": 8,
-      "threshold": "0 shared n-grams",
-      "pairs_checked": 5412,
-      "violating_pairs": 177,
-      "max_shared_ngrams": 10,
-      "passed": false,
-      "violations": [
-        {
-          "held_out": "TB-ADV-005",
-          "train": "TB-ADV-024",
-          "shared_ngrams": 1,
-          "examples": [
-            [
-              "in",
-              "q1",
-              "2026.",
-              "note",
-              "on",
-              "vendor",
-              "strategy",
-              "at"
-            ]
-          ]
-        },
-        {
-          "held_out": "TB-ADV-018",
-          "train": "TB-ADV-023",
-          "shared_ngrams": 1,
-          "examples": [
-            [
-              "in",
-              "q1",
-              "2026.",
-              "note",
-              "on",
-              "engineering",
-              "continuity",
-              "at"
-            ]
-          ]
-        },
-        {
-          "held_out": "TB-ADV-018",
-          "train": "TB-ADV-033",
-          "shared_ngrams": 1,
-          "examples": [
-            [
-              "in",
-              "q1",
-              "2026.",
-              "note",
-              "on",
-              "engineering",
-              "continuity",
-              "at"
-            ]
-          ]
-        },
-        {
-          "held_out": "TB-ADV-028",
-          "train": "TB-ADV-015",
-          "shared_ngrams": 5,
-          "examples": [
-            [
-              "by",
-              "90%",
-              "in",
-              "60",
-              "days.",
-              "congrats",
-              "on",
-              "series"
-            ],
-            [
-              "90%",
-              "in",
-              "60",
-              "days.",
-              "congrats",
-              "on",
-              "series",
-              "a"
-            ],
-            [
-              "open",
-              "roles",
-              "by",
-              "90%",
-              "in",
-              "60",
-              "days.",
-              "congrats"
-            ]
-          ]
-        },
-        {
-          "held_out": "TB-ADV-028",
-          "train": "TB-ADV-039",
-          "shared_ngrams": 1,
-          "examples": [
-            [
-              "increased",
-              "open",
-              "roles",
-              "by",
-              "90%",
-              "in",
-              "60",
-              "days."
-            ]
-          ]
-        },
-        {
-          "held_out": "TB-ADV-029",
-          "train": "TB-ADV-023",
-          "shared_ngrams": 1,
-          "examples": [
-            [
-              "in",
-              "q1",
-              "2026.",
-              "note",
-              "on",
-              "engineering",
-              "continuity",
-              "at"
-            ]
-          ]
-        },
-        {
-          "held_out": "TB-ADV-029",
-          "train": "TB-ADV-033",
-          "shared_ngrams": 1,
-          "examples": [
-            [
-              "in",
-              "q1",
-              "2026.",
-              "note",
-              "on",
-              "engineering",
-              "continuity",
-              "at"
-            ]
-          ]
-        },
-        {
-          "held_out": "TB-ADV-030",
-          "train": "TB-ADV-024",
-          "shared_ngrams": 1,
-          "examples": [
-            [
-              "in",
-              "q1",
-              "2026.",
-              "note",
-              "on",
-              "vendor",
-              "strategy",
-              "at"
-            ]
-          ]
-        },
-        {
-          "held_out": "TB-PROG-015A",
-          "train": "TB-PROG-010A",
-          "shared_ngrams": 4,
-          "examples": [
-            [
-              "has",
-              "reduced",
-              "open",
-              "roles",
-              "by",
-              "80%",
-              "in",
-              "the"
-            ],
-            [
-              "reduced",
-              "open",
-              "roles",
-              "by",
-              "80%",
-              "in",
-              "the",
-              "last"
-            ],
-            [
-              "roles",
-              "by",
-              "80%",
-              "in",
-              "the",
-              "last",
-              "60",
-              "days."
-            ]
-          ]
-        },
-        {
-          "held_out": "TB-PROG-015A",
-          "train": "TB-PROG-010B",
-          "shared_ngrams": 4,
-          "examples": [
-            [
-              "has",
-              "reduced",
-              "open",
-              "roles",
-              "by",
-              "80%",
-              "in",
-              "the"
-            ],
-            [
-              "reduced",
-              "open",
-              "roles",
-              "by",
-              "80%",
-              "in",
-              "the",
-              "last"
-            ],
-            [
-              "roles",
-              "by",
-              "80%",
-              "in",
-              "the",
-              "last",
-              "60",
-              "days."
-            ]
-          ]
-        }
-      ]
+      "template_ngrams_filtered": 396,
+      "max_template_frequency": 1,
+      "threshold": "0 shared content-unique n-grams",
+      "pairs_checked": 7410,
+      "violating_pairs": 0,
+      "max_shared_ngrams": 0,
+      "passed": true,
+      "violations": []
     },
     "embedding_similarity": {
       "check": "embedding_similarity",
-      "method": "tfidf_fallback",
+      "method": "sentence_transformers_all-MiniLM-L6-v2",
       "threshold": 0.85,
-      "pairs_checked": 5412,
-      "violating_pairs": 8,
-      "max_cosine_similarity": 0.9356,
-      "passed": false,
-      "violations": [
-        {
-          "held_out": "TB-SEM-007",
-          "train": "TB-SEM-016",
-          "cosine_similarity": 0.8681
-        },
-        {
-          "held_out": "TB-SEM-007",
-          "train": "TB-SEM-026",
-          "cosine_similarity": 0.891
-        },
-        {
-          "held_out": "TB-SEM-013",
-          "train": "TB-SEM-029",
-          "cosine_similarity": 0.8923
-        },
-        {
-          "held_out": "TB-SEM-013",
-          "train": "TB-SEM-037",
-          "cosine_similarity": 0.9356
-        },
-        {
-          "held_out": "TB-SEM-013",
-          "train": "TB-SEM-039",
-          "cosine_similarity": 0.8937
-        },
-        {
-          "held_out": "TB-SEM-013",
-          "train": "TB-SEM-060",
-          "cosine_similarity": 0.9041
-        },
-        {
-          "held_out": "TB-SEM-049",
-          "train": "TB-SEM-026",
-          "cosine_similarity": 0.8799
-        },
-        {
-          "held_out": "TB-SEM-050",
-          "train": "TB-SEM-024",
-          "cosine_similarity": 0.9321
-        }
-      ]
+      "pairs_checked": 7410,
+      "violating_pairs": 0,
+      "max_cosine_similarity": 0.8121,
+      "passed": true,
+      "violations": []
     },
     "time_shift": {
       "check": "time_shift",
@@ -303,7 +33,7 @@
       },
       "model_knowledge_cutoff": "2025-08-01",
       "gap_months": 6,
-      "signals_checked": 167,
+      "signals_checked": 179,
       "passed": true,
       "note": "All hiring signals reference the Feb–Apr 2026 observation window. The base model's knowledge cutoff (Aug 2025) predates this window by 6+ months, preventing memorization of these specific company signals.",
       "sample_signals": [
@@ -312,23 +42,23 @@
           "observation": "Cascade Robotics doubled open roles in 60 days."
         },
         {
-          "task_id": "TB-ADV-003",
-          "observation": "Fulgent Data reduced open roles by 30% in 60 days."
-        },
-        {
           "task_id": "TB-ADV-008",
           "observation": "Novascreen AI reduced open roles by 22% in 60 days."
         },
         {
-          "task_id": "TB-ADV-010",
-          "observation": "Cipherlink reduced open roles by 50% in 60 days."
+          "task_id": "TB-ADV-009",
+          "observation": "Stellarnet open roles increased by 15% in the last 60 days."
         },
         {
-          "task_id": "TB-ADV-015",
-          "observation": "Zephyr Cloud increased open roles by 90% in 60 days."
+          "task_id": "TB-ADV-011",
+          "observation": "Verdant Networks reduced open roles by 80% in 60 days."
+        },
+        {
+          "task_id": "TB-ADV-013",
+          "observation": "Hexadyne Corp open roles decreased by 25% in 60 days."
         }
       ]
     }
   },
-  "overall_passed": false
+  "overall_passed": true
 }

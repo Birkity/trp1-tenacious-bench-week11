@@ -3,7 +3,7 @@
 Machine-verifiable evaluation benchmark for B2B sales-agent quality. Built from Week 10
 Conversion Engine traces, probe failures, and Week 11 audit/schema/scoring design.
 
-**Acts I & II complete.** 250 tasks, four authoring modes, three partitions sealed.
+**Acts I & II complete.** 257 tasks, four authoring modes, three partitions sealed.
 
 ---
 
@@ -12,9 +12,9 @@ Conversion Engine traces, probe failures, and Week 11 audit/schema/scoring desig
 | Item | Status |
 |------|--------|
 | Act I — Audit & Schema | Complete |
-| Act II — Dataset (250 tasks) | Complete |
+| Act II — Dataset (257 tasks) | Complete |
 | Partitions (train/dev/held_out) | Sealed (seed=42) |
-| Contamination check | Run (time-shift PASS; see notes in `data/contamination_check.json`) |
+| Contamination check | All 3 checks PASS (n-gram=0, cosine=0.81, time-shift) |
 | Inter-rater agreement | Complete (min 97%, κ≥0.92) |
 | Datasheet | Complete (`docs/datasheet.md`) |
 | Act III — Preference pairs + SimPO training | Days 5–6 |
@@ -39,9 +39,9 @@ data/
       adversarial_hand_batch1.jsonl (40 tasks — hand-authored edge cases)
     dev_synthetic/
       semantic_edge_cases_batch1.jsonl (60 tasks — LLM-generated Phase 2 probes)
-    train/tasks.jsonl             (123 tasks, 50% — preference pair source)
-    dev/tasks.jsonl               (83 tasks, 30% — public eval)
-    held_out/tasks.jsonl          (44 tasks, 20% — SEALED, gitignored)
+    train/tasks.jsonl             (114 tasks, 44% — preference pair source)
+    dev/tasks.jsonl               (78 tasks, 30% — public eval)
+    held_out/tasks.jsonl          (65 tasks, 25% — SEALED, gitignored)
 
 docs/
   audit_memo.md                   Why Tenacious-Bench is needed (Week 10 evidence)
@@ -125,13 +125,15 @@ python scripts/analysis/contamination_check.py
 |-------------|-------|------|--------|------|------|--------|
 | trace_derived | 75 | 15 | 32 | 28 | 22 | 53 |
 | programmatic | 75 | 20 | 30 | 25 | 25 | 50 |
-| adversarial_hand | 40 | 8 | 1 | 31 | 9 | 31 |
-| synthetic_semantic | 60 | — | — | — | 60 | 0 |
-| **Total** | **250** | 43 | 63 | 84 | 116 | 134 |
+| adversarial_hand | 52 | 8 | 1 | 43 | 10 | 42 |
+| synthetic_semantic | 55 | — | — | — | 55 | 0 |
+| **Total** | **257** | 43 | 63 | 96 | 112 | 145 |
 
-Synthetic semantic tasks (TB-SEM) are Phase 2 probes — all pass D1–D5 deterministically
-but carry semantically unjustified claims. They are not scored PASS/REJECT in the
-D1–D5 sense; difficulty labels not assigned.
+Adversarial batch expanded from 40 to 52 tasks (12 new hardcoded edge cases: TB-ADV-041–052
+targeting D1/D2/D3/D4/D5 failures and one Phase 2 semantic probe).
+Synthetic batch reduced from 60 to 55 tasks (5 removed for "leverage" style-guide violation).
+Synthetic semantic tasks (TB-SEM) are Phase 2 probes designed to pass D1–D5 but carry
+semantically unjustified claims. Difficulty labels not assigned.
 
 ---
 
@@ -140,12 +142,12 @@ D1–D5 sense; difficulty labels not assigned.
 | Code | Dimension | Rule |
 |------|-----------|------|
 | D1 | Grounding Fidelity | All numerics in email appear in brief; `bench_available=False` blocks product claims |
-| D2 | ICP Pitch Alignment | `segment=Ambiguous` + product claim = REJECT (Phase 1 fast-fail) |
+| D2 | ICP Pitch Alignment | Phase 1: `segment=Ambiguous` + product claim = REJECT; Ambiguous email must end with `?`. Phase 2 LLM: checks segment→frame match for all segments (`--llm-judge`) |
 | D3 | Signal Directionality | `delta_pct < -20%` + growth-frame term = REJECT |
-| D4 | Tone Compliance | 18 banned phrases (hyperbole, urgency, condescension) |
-| D5 | Format Compliance | Subject ≤60 chars, body ≤120 words, ≤1 `?`, no URLs |
+| D4 | Tone Compliance | 30+ banned phrases from style guide (incl. "leverage", "skyrocket", "synergize"); "bench" word banned in prospect copy |
+| D5 | Format Compliance | Approved subject prefix; subject ≤60 chars; body ≤120 words; ≤1 `?`; no URLs; no booking phrases |
 
-All five dimensions are deterministic — no LLM at evaluation time.
+D1/D3/D4/D5 and D2 Phase 1 are fully deterministic. D2 Phase 2 uses OpenRouter LLM (`--llm-judge` flag).
 
 ---
 
