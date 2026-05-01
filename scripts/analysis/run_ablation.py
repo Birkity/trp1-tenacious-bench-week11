@@ -5,7 +5,7 @@ Three judges measured on dev (default) or held_out partition:
 
   (1) Deterministic  : score_task() from scoring_evaluator.py
                        This IS the ground truth — 100% by construction.
-  (2) Base model     : Qwen2.5-0.5B-Instruct, no LoRA adapter
+  (2) Base model     : Qwen3-30B-A3B-Instruct, no LoRA adapter
                        Prompt-engineering baseline -> Delta B denominator.
   (3) Trained judge  : same backbone + SimPO LoRA adapter
                        Evaluation target -> Delta A (vs ground truth).
@@ -44,7 +44,7 @@ sys.path.insert(0, str(ROOT / "benchmark"))
 from scoring_evaluator import score_task  # noqa: E402
 
 # ── Defaults ──────────────────────────────────────────────────────────────────
-DEFAULT_MODEL      = "unsloth/Qwen2.5-0.5B-Instruct"
+DEFAULT_MODEL      = "unsloth/Qwen3-30B-A3B-Instruct"
 DEFAULT_ADAPTER    = str(ROOT / "training" / "tenacious_judge_adapter")
 DEFAULT_OUTPUT_DIR = str(ROOT / "ablations")
 MAX_NEW_TOKENS     = 128
@@ -152,10 +152,16 @@ def _infer(model, tokenizer, prompt: str, device: str) -> str:
 
 
 def _load_tasks(partition: str) -> list[dict]:
-    path = ROOT / "data" / "tenacious_bench_v0.1" / partition / "tasks.jsonl"
-    if not path.exists():
-        raise FileNotFoundError(f"Partition not found: {path}")
-    return [json.loads(l) for l in path.read_text("utf-8").splitlines() if l.strip()]
+    base = ROOT / "data" / "tenacious_bench_v0.1" / partition
+    # Try canonical name first, then partition-specific names used by split scripts
+    for candidate in ("tasks.jsonl", f"{partition}_tasks.jsonl", "held_tasks.jsonl", "dev_tasks.jsonl"):
+        path = base / candidate
+        if path.exists():
+            return [json.loads(l) for l in path.read_text("utf-8").splitlines() if l.strip()]
+    raise FileNotFoundError(
+        f"No tasks file found in {base}. "
+        f"Expected one of: tasks.jsonl, {partition}_tasks.jsonl"
+    )
 
 
 def _accuracy(preds: list[str], truths: list[str]) -> tuple[float, int, int]:

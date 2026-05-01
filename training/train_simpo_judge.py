@@ -1,13 +1,17 @@
 """
 train_simpo_judge.py  —  SimPO LoRA training for Tenacious-Bench judge (Path B)
 
-Backbone  : Qwen 3.5 0.8B, 16-bit LoRA, fp16 on T4 (no quantisation — per Unsloth guide)
+Backbone  : unsloth/Qwen3-30B-A3B-Instruct  (MoE: 30B total / 3B active params)
+            NOTE: GGUF models (ending in -GGUF) are inference-only and CANNOT be
+            fine-tuned. This script uses the standard Unsloth Instruct checkpoint.
 Method    : SimPO — reference-free preference optimisation, beta=2.0, gamma=0.5
-Data      : training_data/tenacious_judge_train.jsonl  (114 preference pairs)
-Hardware  : Google Colab T4 (16 GB VRAM).  Expected wall time: 30–60 min.
+Data      : training_data/tenacious_judge_train_v2.jsonl  (200 preference pairs)
+Hardware  : Google Colab T4 (16 GB VRAM) — requires 4-bit loading for 30B model.
+            For a Colab A100/L4 you can set load_in_4bit=False for 16-bit LoRA.
+            Expected wall time on T4: 60–120 min.
 
 Before running on Colab:
-  1. Upload training_data/tenacious_judge_train.jsonl → /content/
+  1. Upload training_data/tenacious_judge_train_v2.jsonl → /content/
   2. (Optional) set HF_REPO_ID and HF_TOKEN to push adapter to HuggingFace Hub
   3. Runtime → Change runtime type → T4 GPU
   4. Run all cells (or: !python train_simpo_judge.py)
@@ -47,10 +51,10 @@ from unsloth import FastLanguageModel
 
 # ── 2. CONSTANTS ─────────────────────────────────────────────────────────────
 # Update MODEL_NAME to your pinned backbone (see training/requirements.txt).
-MODEL_NAME    = "unsloth/Qwen2.5-0.5B-Instruct"   # Closest unsloth 0.5–0.8B model.
-                                                    # Update to unsloth/Qwen3.5-0.8B-Instruct
-                                                    # once that checkpoint is on HuggingFace.
-DATASET_PATH  = "/content/tenacious_judge_train.jsonl"
+MODEL_NAME    = "unsloth/Qwen3-30B-A3B-Instruct"   # MoE: 30B total / 3B active params.
+                                                    # Do NOT use the -GGUF variant — GGUF is
+                                                    # inference-only and cannot be fine-tuned.
+DATASET_PATH  = "/content/tenacious_judge_train_v2.jsonl"
 OUTPUT_DIR    = "/content/outputs/tenacious_judge_adapter"
 
 # HuggingFace Hub — set both to push adapter after training.
@@ -87,13 +91,15 @@ print(f"GPU: {device_name}  |  VRAM: {vram_gb:.1f} GB")
 dtype = torch.bfloat16 if torch.cuda.is_bf16_supported() else torch.float16
 print(f"dtype: {'bfloat16' if dtype == torch.bfloat16 else 'float16'}\n")
 
-# ── 4. LOAD MODEL (16-bit LoRA, no quantisation) ──────────────────────────────
+# ── 4. LOAD MODEL (4-bit QLoRA — required for 30B model on T4 16 GB) ─────────
+# 30B weights at fp16 = ~60 GB; at 4-bit = ~15 GB, which fits on T4.
+# If running on A100/L4 (>=40 GB), set load_in_4bit=False for pure 16-bit LoRA.
 print(f"Loading {MODEL_NAME}…")
 model, tokenizer = FastLanguageModel.from_pretrained(
-    model_name    = MODEL_NAME,
+    model_name     = MODEL_NAME,
     max_seq_length = MAX_SEQ_LEN,
     dtype          = dtype,
-    load_in_4bit   = False,   # 16-bit LoRA — per Unsloth Qwen 3.5 guide
+    load_in_4bit   = True,    # 4-bit QLoRA required for 30B on T4
 )
 print("Model loaded.\n")
 
@@ -150,28 +156,28 @@ import inspect as _inspect
 
 _cpo_valid = set(_inspect.signature(CPOConfig.__init__).parameters)
 
-_all_kwargs = dict(
-    output_dir                  = OUTPUT_DIR,
-    num_train_epochs            = EPOCHS,
-    per_device_train_batch_size = BATCH_SIZE,
-    gradient_accumulation_steps = GRAD_ACCUM,
-    learning_rate               = LR,
-    loss_type                   = "simpo",   # SimPO loss; ignored gracefully if unsupported
-    beta                        = BETA,
-    gamma_beta_ratio            = GAMMA_BETA_RATIO,  # target margin = beta * ratio = 0.5
-    cpo_alpha                   = 0.0,       # 0 = pure SimPO, no NLL component
-    max_length                  = MAX_SEQ_LEN,
-    max_prompt_length           = MAX_SEQ_LEN // 2,
-    max_completion_length       = MAX_SEQ_LEN // 2,
-    fp16                        = (dtype == torch.float16),
-    bf16                        = (dtype == torch.bfloat16),
-    logging_steps               = 1,
-    save_strategy               = "no",
-    seed                        = SEED,
-    remove_unused_columns       = False,
-    report_to                   = "none",
-    dataloader_pin_memory       = False,
-)
+_all_kwargs = {
+    "output_dir":                  OUTPUT_DIR,
+    "num_train_epochs":            EPOCHS,
+    "per_device_train_batch_size": BATCH_SIZE,
+    "gradient_accumulation_steps": GRAD_ACCUM,
+    "learning_rate":               LR,
+    "loss_type":                   "simpo",   # SimPO loss; ignored gracefully if unsupported
+    "beta":                        BETA,
+    "gamma_beta_ratio":            GAMMA_BETA_RATIO,  # target margin = beta * ratio = 0.5
+    "cpo_alpha":                   0.0,       # 0 = pure SimPO, no NLL component
+    "max_length":                  MAX_SEQ_LEN,
+    "max_prompt_length":           MAX_SEQ_LEN // 2,
+    "max_completion_length":       MAX_SEQ_LEN // 2,
+    "fp16":                        (dtype == torch.float16),
+    "bf16":                        (dtype == torch.bfloat16),
+    "logging_steps":               1,
+    "save_strategy":               "no",
+    "seed":                        SEED,
+    "remove_unused_columns":       False,
+    "report_to":                   "none",
+    "dataloader_pin_memory":       False,
+}
 
 _dropped = {k for k in _all_kwargs if k not in _cpo_valid}
 if _dropped:
@@ -223,7 +229,7 @@ config_path = out / "training_config.json"
 training_config = {
     "backbone"                  : MODEL_NAME,
     "method"                    : "SimPO",
-    "dataset"                   : "tenacious_judge_train.jsonl",
+    "dataset"                   : "tenacious_judge_train_v2.jsonl",
     "training_pairs"            : len(raw_pairs),
     "lora_r"                    : LORA_R,
     "lora_alpha"                : LORA_ALPHA,
@@ -242,7 +248,7 @@ training_config = {
     "config_params_dropped"     : sorted(_dropped),
     "max_seq_len"               : MAX_SEQ_LEN,
     "dtype"                     : "float16" if dtype == torch.float16 else "bfloat16",
-    "load_in_4bit"              : False,
+    "load_in_4bit"              : True,
     "seed"                      : SEED,
     "train_loss_final"          : round(train_result.training_loss, 4),
     "wall_time_min"             : round(elapsed / 60, 1),
@@ -260,7 +266,7 @@ if steps:
     ax.plot(steps, losses, linewidth=1.5, color="#2563eb", label="SimPO loss")
     ax.set_xlabel("Step")
     ax.set_ylabel("Loss")
-    ax.set_title("Tenacious Judge — SimPO Training Loss (Qwen 0.8B, 114 pairs)")
+    ax.set_title(f"Tenacious Judge — SimPO Training Loss (Qwen 0.8B, {len(raw_pairs)} pairs)")
     ax.legend()
     ax.grid(True, alpha=0.3)
     fig.tight_layout()
