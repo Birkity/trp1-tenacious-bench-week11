@@ -5,7 +5,7 @@ Three judges measured on dev (default) or held_out partition:
 
   (1) Deterministic  : score_task() from scoring_evaluator.py
                        This IS the ground truth — 100% by construction.
-  (2) Base model     : Qwen3-30B-A3B-Instruct, no LoRA adapter
+  (2) Base model     : Qwen2.5-1.5B-Instruct, no LoRA adapter
                        Prompt-engineering baseline -> Delta B denominator.
   (3) Trained judge  : same backbone + SimPO LoRA adapter
                        Evaluation target -> Delta A (vs ground truth).
@@ -34,8 +34,10 @@ import argparse
 import json
 import sys
 import time
+from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Optional
 
 import torch
 
@@ -44,7 +46,7 @@ sys.path.insert(0, str(ROOT / "benchmark"))
 from scoring_evaluator import score_task  # noqa: E402
 
 # ── Defaults ──────────────────────────────────────────────────────────────────
-DEFAULT_MODEL      = "unsloth/Qwen3-30B-A3B-Instruct"
+DEFAULT_MODEL      = "unsloth/Qwen2.5-1.5B-Instruct"
 DEFAULT_ADAPTER    = str(ROOT / "training" / "tenacious_judge_adapter")
 DEFAULT_OUTPUT_DIR = str(ROOT / "ablations")
 MAX_NEW_TOKENS     = 128
@@ -248,7 +250,25 @@ def _run_base_inference(
     verdicts: list[str] = []
     print(f"\n[2/3] Base model inference ({len(tasks)} tasks)...")
     for i, task in enumerate(tasks):
-        prompt = _build_prompt(task)
+        prompt = (
+            "You are a strict email quality evaluator.\n\n"
+            "You MUST output ONLY in the exact format below.\n"
+            "Do NOT add explanations before or after.\n"
+            "Do NOT write paragraphs.\n"
+            "Do NOT restate the task.\n\n"
+            "FORMAT (exactly):\n\n"
+            "VERDICT: PASS\n"
+            "Primary failure: <D1|D2|D3|D4|D5 or NONE>\n"
+            "Reason: <one short sentence>\n\n"
+            "Definitions of dimensions:\n"
+            "D1 — Grounding in brief facts (no fabrication, no number drift)\n"
+            "D2 — ICP alignment (correct segment + ends with a question)\n"
+            "D3 — Signal directionality (growth vs contraction framing matches data)\n"
+            "D4 — Tone compliance (no banned phrases, no hype, no pressure)\n"
+            "D5 — Format compliance (no meeting-booking language, correct structure)\n\n"
+            "Now evaluate the following task.\n\n"
+            + _build_prompt(task)
+        )
         if adapter_exists:
             with model.disable_adapter():
                 raw = _infer(model, tokenizer, prompt, device)
@@ -258,7 +278,6 @@ def _run_base_inference(
         verdicts.append(_parse_verdict(raw))
         if (i + 1) % 20 == 0 or (i + 1) == len(tasks):
             print(f"  {i + 1}/{len(tasks)}")
-    acc, corr, n = _accuracy(verdicts, [""]*len(tasks))  # placeholder; full acc computed later
     print(f"  UNKNOWN outputs: {verdicts.count('UNKNOWN')}")
     return raws, verdicts
 
@@ -271,8 +290,26 @@ def _run_trained_inference(
     verdicts: list[str] = []
     print(f"\n[3/3] Trained model inference ({len(tasks)} tasks)...")
     for i, task in enumerate(tasks):
-        prompt = _build_prompt(task)
-        raw    = _infer(model, tokenizer, prompt, device)
+        prompt = (
+            "You are a strict email quality evaluator.\n\n"
+            "You MUST output ONLY in the exact format below.\n"
+            "Do NOT add explanations before or after.\n"
+            "Do NOT write paragraphs.\n"
+            "Do NOT restate the task.\n\n"
+            "FORMAT (exactly):\n\n"
+            "VERDICT: PASS\n"
+            "Primary failure: <D1|D2|D3|D4|D5 or NONE>\n"
+            "Reason: <one short sentence>\n\n"
+            "Definitions of dimensions:\n"
+            "D1 — Grounding in brief facts (no fabrication, no number drift)\n"
+            "D2 — ICP alignment (correct segment + ends with a question)\n"
+            "D3 — Signal directionality (growth vs contraction framing matches data)\n"
+            "D4 — Tone compliance (no banned phrases, no hype, no pressure)\n"
+            "D5 — Format compliance (no meeting-booking language, correct structure)\n\n"
+            "Now evaluate the following task.\n\n"
+            + _build_prompt(task)
+        )
+        raw = _infer(model, tokenizer, prompt, device)
         raws.append(raw)
         verdicts.append(_parse_verdict(raw))
         if (i + 1) % 20 == 0 or (i + 1) == len(tasks):
@@ -302,93 +339,80 @@ def _compute_dim_errors(
             for judge, counts in errors.items()}
 
 
-def _print_summary(
-    partition: str,
-    n: int,
-    gt_pass: int,
-    gt_reject: int,
-    base_acc: float,
-    base_corr: int,
-    base_n: int,
-    trained_acc: float,
-    trained_corr: int,
-    trained_n: int,
-    delta_a: float | None,
-    delta_b: float | None,
-    dim_errors: dict,
-    base_verdicts: list[str],
-    trained_verdicts: list[str],
-) -> None:
+@dataclass
+class AblationResults:
+    partition:        str
+    tasks:            list[dict]
+    det_verdicts:     list[str]
+    det_dims:         list[Optional[str]]
+    det_reasons:      list[str]
+    base_verdicts:    list[str]       = field(default_factory=list)
+    base_raws:        list[str]       = field(default_factory=list)
+    trained_verdicts: list[str]       = field(default_factory=list)
+    trained_raws:     list[str]       = field(default_factory=list)
+    base_acc:         float           = 0.0
+    base_corr:        int             = 0
+    base_n:           int             = 0
+    trained_acc:      float           = 0.0
+    trained_corr:     int             = 0
+    trained_n:        int             = 0
+    delta_a:          Optional[float] = None
+    delta_b:          Optional[float] = None
+    dim_errors:       dict            = field(default_factory=dict)
+    gt_pass:          int             = 0
+    gt_reject:        int             = 0
+
+
+def _print_summary(r: AblationResults) -> None:
     sep = "=" * 62
     print(f"\n{sep}")
-    print(f"  ABLATION RESULTS   partition={partition}   n={n}")
+    print(f"  ABLATION RESULTS   partition={r.partition}   n={len(r.tasks)}")
     print(sep)
-    print(f"  Ground truth dist  : PASS={gt_pass}  REJECT={gt_reject}")
-    print(f"  (1) Deterministic  : 100.0%  (baseline -- defines ground truth)")
+    print(f"  Ground truth dist  : PASS={r.gt_pass}  REJECT={r.gt_reject}")
+    print("  (1) Deterministic  : 100.0%  (baseline -- defines ground truth)")
 
-    if base_verdicts[0] != "NOT_RUN":
-        print(f"  (2) Base model     : {base_acc:.1%}  ({base_corr}/{base_n} correct)")
+    if r.base_verdicts and r.base_verdicts[0] != "NOT_RUN":
+        print(f"  (2) Base model     : {r.base_acc:.1%}  ({r.base_corr}/{r.base_n} correct)")
     else:
         print("  (2) Base model     : NOT RUN  (--dry-run)")
 
-    if trained_verdicts[0] != "NOT_RUN":
-        print(f"  (3) Trained judge  : {trained_acc:.1%}  ({trained_corr}/{trained_n} correct)")
+    if r.trained_verdicts and r.trained_verdicts[0] != "NOT_RUN":
+        print(f"  (3) Trained judge  : {r.trained_acc:.1%}  ({r.trained_corr}/{r.trained_n} correct)")
     else:
         print("  (3) Trained judge  : NOT RUN  (adapter missing or --dry-run)")
 
     print()
-    if delta_a is not None:
-        print(f"  Delta A (trained vs GT)  : {delta_a:+.1%}")
-        print(f"  Delta B (trained vs base): {delta_b:+.1%}")
+    if r.delta_a is not None:
+        print(f"  Delta A (trained vs GT)  : {r.delta_a:+.1%}")
+        print(f"  Delta B (trained vs base): {r.delta_b:+.1%}")
 
     print()
     print("  Per-dimension error counts (wrong predictions):")
-    for judge, errs in dim_errors.items():
+    for judge, errs in r.dim_errors.items():
         label = dict(sorted(errs.items())) if errs else "none"
         print(f"    {judge}: {label}")
     print(sep)
 
 
-def _save_outputs(
-    out_dir: Path,
-    args: argparse.Namespace,
-    tasks: list[dict],
-    det_verdicts: list[str],
-    det_dims: list[str | None],
-    det_reasons: list[str],
-    base_verdicts: list[str],
-    base_raws: list[str],
-    trained_verdicts: list[str],
-    trained_raws: list[str],
-    base_acc: float,
-    base_corr: int,
-    base_n: int,
-    trained_acc: float,
-    trained_corr: int,
-    trained_n: int,
-    delta_a: float | None,
-    delta_b: float | None,
-    dim_errors: dict,
-    gt_pass: int,
-    gt_reject: int,
-) -> None:
+def _save_outputs(out_dir: Path, args: argparse.Namespace, r: AblationResults) -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
 
     per_task_rows = [
         {
-            "task_id":         task["task_id"],
-            "source_mode":     task.get("brief", {}).get("source_mode"),
-            "difficulty":      task.get("difficulty"),
-            "ground_truth":    dv,
+            "task_id":          task["task_id"],
+            "source_mode":      task.get("brief", {}).get("source_mode"),
+            "difficulty":       task.get("difficulty"),
+            "ground_truth":     dv,
             "failed_dimension": dd,
-            "det_reason":      dr,
-            "base_verdict":    bv,
-            "base_correct":    (bv == dv) if bv not in ("NOT_RUN", "UNKNOWN") else None,
-            "trained_verdict": tv,
-            "trained_correct": (tv == dv) if tv not in ("NOT_RUN", "UNKNOWN") else None,
+            "det_reason":       dr,
+            "base_verdict":     bv,
+            "base_correct":     (bv == dv) if bv not in ("NOT_RUN", "UNKNOWN") else None,
+            "trained_verdict":  tv,
+            "trained_correct":  (tv == dv) if tv not in ("NOT_RUN", "UNKNOWN") else None,
         }
         for task, dv, dd, dr, bv, tv in zip(
-            tasks, det_verdicts, det_dims, det_reasons, base_verdicts, trained_verdicts
+            r.tasks, r.det_verdicts, r.det_dims, r.det_reasons,
+            r.base_verdicts, r.trained_verdicts,
         )
     ]
 
@@ -396,20 +420,20 @@ def _save_outputs(
         "metadata": {
             "run_date":     datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
             "partition":    args.partition,
-            "n_tasks":      len(tasks),
+            "n_tasks":      len(r.tasks),
             "backbone":     args.model,
             "adapter_path": args.adapter_path,
             "dry_run":      args.dry_run,
         },
         "summary": {
-            "ground_truth_dist": {"PASS": gt_pass, "REJECT": gt_reject},
+            "ground_truth_dist": {"PASS": r.gt_pass, "REJECT": r.gt_reject},
             "deterministic":     {"accuracy": 1.0, "note": "defines ground truth"},
-            "base_model":        {"accuracy": base_acc,    "correct": base_corr,    "total": base_n},
-            "trained_model":     {"accuracy": trained_acc, "correct": trained_corr, "total": trained_n},
-            "delta_a_trained_vs_gt":   delta_a,
-            "delta_b_trained_vs_base": delta_b,
+            "base_model":        {"accuracy": r.base_acc,    "correct": r.base_corr,    "total": r.base_n},
+            "trained_model":     {"accuracy": r.trained_acc, "correct": r.trained_corr, "total": r.trained_n},
+            "delta_a_trained_vs_gt":   r.delta_a,
+            "delta_b_trained_vs_base": r.delta_b,
         },
-        "per_dimension_errors": dim_errors,
+        "per_dimension_errors": r.dim_errors,
         "tasks": per_task_rows,
     }
 
@@ -420,7 +444,8 @@ def _save_outputs(
     traces_path = out_dir / "held_out_traces.jsonl"
     with traces_path.open("w", encoding="utf-8") as fh:
         for task, dv, bv, br, tv, tr in zip(
-            tasks, det_verdicts, base_verdicts, base_raws, trained_verdicts, trained_raws
+            r.tasks, r.det_verdicts, r.base_verdicts, r.base_raws,
+            r.trained_verdicts, r.trained_raws,
         ):
             fh.write(json.dumps({
                 "task_id":         task["task_id"],
@@ -459,15 +484,23 @@ def main() -> None:
 
     print("\n[1/3] Deterministic scorer (score_task)...")
     det_verdicts, det_dims, det_reasons = _run_deterministic(tasks)
-    gt_pass   = det_verdicts.count("PASS")
-    gt_reject = det_verdicts.count("REJECT")
+
+    r = AblationResults(
+        partition    = args.partition,
+        tasks        = tasks,
+        det_verdicts = det_verdicts,
+        det_dims     = det_dims,
+        det_reasons  = det_reasons,
+        gt_pass      = det_verdicts.count("PASS"),
+        gt_reject    = det_verdicts.count("REJECT"),
+    )
 
     if args.dry_run:
         print("\n-- dry-run: skipping LLM inference --")
-        base_raws        = [""] * len(tasks)
-        base_verdicts    = ["NOT_RUN"] * len(tasks)
-        trained_raws     = [""] * len(tasks)
-        trained_verdicts = ["NOT_RUN"] * len(tasks)
+        r.base_raws        = [""] * len(tasks)
+        r.base_verdicts    = ["NOT_RUN"] * len(tasks)
+        r.trained_raws     = [""] * len(tasks)
+        r.trained_verdicts = ["NOT_RUN"] * len(tasks)
     else:
         adapter_path   = Path(args.adapter_path)
         adapter_exists = adapter_path.exists()
@@ -475,45 +508,28 @@ def main() -> None:
 
         model, tokenizer = _load_model_and_adapter(args.model, adapter_path, dtype, device)
 
-        base_raws, base_verdicts = _run_base_inference(
+        r.base_raws, r.base_verdicts = _run_base_inference(
             model, tokenizer, tasks, adapter_exists, device
         )
-        base_acc, base_corr, base_n = _accuracy(base_verdicts, det_verdicts)
-        print(f"  Base accuracy: {base_acc:.1%}  ({base_corr}/{base_n})")
+        r.base_acc, r.base_corr, r.base_n = _accuracy(r.base_verdicts, det_verdicts)
+        print(f"  Base accuracy: {r.base_acc:.1%}  ({r.base_corr}/{r.base_n})")
 
         if adapter_exists:
-            trained_raws, trained_verdicts = _run_trained_inference(
+            r.trained_raws, r.trained_verdicts = _run_trained_inference(
                 model, tokenizer, tasks, device
             )
         else:
-            trained_raws     = ["NOT_RUN"] * len(tasks)
-            trained_verdicts = ["NOT_RUN"] * len(tasks)
+            r.trained_raws     = ["NOT_RUN"] * len(tasks)
+            r.trained_verdicts = ["NOT_RUN"] * len(tasks)
 
-    base_acc,    base_corr,    base_n    = _accuracy(base_verdicts,    det_verdicts)
-    trained_acc, trained_corr, trained_n = _accuracy(trained_verdicts, det_verdicts)
-    delta_a = (trained_acc - 1.0)      if trained_verdicts[0] != "NOT_RUN" else None
-    delta_b = (trained_acc - base_acc) if trained_verdicts[0] != "NOT_RUN" else None
+    r.base_acc,    r.base_corr,    r.base_n    = _accuracy(r.base_verdicts,    det_verdicts)
+    r.trained_acc, r.trained_corr, r.trained_n = _accuracy(r.trained_verdicts, det_verdicts)
+    r.delta_a = (r.trained_acc - 1.0)         if r.trained_verdicts[0] != "NOT_RUN" else None
+    r.delta_b = (r.trained_acc - r.base_acc)  if r.trained_verdicts[0] != "NOT_RUN" else None
+    r.dim_errors = _compute_dim_errors(det_verdicts, det_dims, r.base_verdicts, r.trained_verdicts)
 
-    dim_errors = _compute_dim_errors(det_verdicts, det_dims, base_verdicts, trained_verdicts)
-
-    _print_summary(
-        args.partition, len(tasks), gt_pass, gt_reject,
-        base_acc, base_corr, base_n,
-        trained_acc, trained_corr, trained_n,
-        delta_a, delta_b, dim_errors,
-        base_verdicts, trained_verdicts,
-    )
-
-    _save_outputs(
-        Path(args.output_dir), args, tasks,
-        det_verdicts, det_dims, det_reasons,
-        base_verdicts, base_raws,
-        trained_verdicts, trained_raws,
-        base_acc, base_corr, base_n,
-        trained_acc, trained_corr, trained_n,
-        delta_a, delta_b, dim_errors,
-        gt_pass, gt_reject,
-    )
+    _print_summary(r)
+    _save_outputs(Path(args.output_dir), args, r)
 
 
 if __name__ == "__main__":

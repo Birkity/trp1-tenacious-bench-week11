@@ -1,9 +1,7 @@
 """
 train_simpo_judge.py  —  SimPO LoRA training for Tenacious-Bench judge (Path B)
 
-Backbone  : unsloth/Qwen3-30B-A3B-Instruct  (MoE: 30B total / 3B active params)
-            NOTE: GGUF models (ending in -GGUF) are inference-only and CANNOT be
-            fine-tuned. This script uses the standard Unsloth Instruct checkpoint.
+Backbone  : unsloth/Qwen2.5-1.5B-Instruct  (1.5B dense, 16-bit LoRA on T4)
 Method    : SimPO — reference-free preference optimisation, beta=2.0, gamma=0.5
 Data      : training_data/tenacious_judge_train_v2.jsonl  (200 preference pairs)
 Hardware  : Google Colab T4 (16 GB VRAM) — requires 4-bit loading for 30B model.
@@ -51,9 +49,7 @@ from unsloth import FastLanguageModel
 
 # ── 2. CONSTANTS ─────────────────────────────────────────────────────────────
 # Update MODEL_NAME to your pinned backbone (see training/requirements.txt).
-MODEL_NAME    = "unsloth/Qwen3-30B-A3B-Instruct"   # MoE: 30B total / 3B active params.
-                                                    # Do NOT use the -GGUF variant — GGUF is
-                                                    # inference-only and cannot be fine-tuned.
+MODEL_NAME    = "unsloth/Qwen2.5-1.5B-Instruct"    # 1.5B dense — fits in 16-bit on T4.
 DATASET_PATH  = "/content/tenacious_judge_train_v2.jsonl"
 OUTPUT_DIR    = "/content/outputs/tenacious_judge_adapter"
 
@@ -91,15 +87,13 @@ print(f"GPU: {device_name}  |  VRAM: {vram_gb:.1f} GB")
 dtype = torch.bfloat16 if torch.cuda.is_bf16_supported() else torch.float16
 print(f"dtype: {'bfloat16' if dtype == torch.bfloat16 else 'float16'}\n")
 
-# ── 4. LOAD MODEL (4-bit QLoRA — required for 30B model on T4 16 GB) ─────────
-# 30B weights at fp16 = ~60 GB; at 4-bit = ~15 GB, which fits on T4.
-# If running on A100/L4 (>=40 GB), set load_in_4bit=False for pure 16-bit LoRA.
+# ── 4. LOAD MODEL (16-bit LoRA — 1.5B fits comfortably on T4) ────────────────
 print(f"Loading {MODEL_NAME}…")
 model, tokenizer = FastLanguageModel.from_pretrained(
     model_name     = MODEL_NAME,
     max_seq_length = MAX_SEQ_LEN,
     dtype          = dtype,
-    load_in_4bit   = True,    # 4-bit QLoRA required for 30B on T4
+    load_in_4bit   = False,   # 16-bit LoRA — 1.5B at fp16 = ~3 GB, well within T4
 )
 print("Model loaded.\n")
 
@@ -248,7 +242,7 @@ training_config = {
     "config_params_dropped"     : sorted(_dropped),
     "max_seq_len"               : MAX_SEQ_LEN,
     "dtype"                     : "float16" if dtype == torch.float16 else "bfloat16",
-    "load_in_4bit"              : True,
+    "load_in_4bit"              : False,
     "seed"                      : SEED,
     "train_loss_final"          : round(train_result.training_loss, 4),
     "wall_time_min"             : round(elapsed / 60, 1),
