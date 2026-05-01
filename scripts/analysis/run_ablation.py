@@ -144,7 +144,11 @@ def _infer(model, tokenizer, prompt: str, device: str) -> str:
         out = model.generate(
             **inputs,
             max_new_tokens = MAX_NEW_TOKENS,
+            max_length     = None,   # override model's default generation_config max_length
             do_sample      = False,
+            temperature    = None,   # suppress sampling-param warnings when do_sample=False
+            top_p          = None,
+            top_k          = None,
             pad_token_id   = tokenizer.eos_token_id,
         )
     new_ids = out[0][inputs["input_ids"].shape[1]:]
