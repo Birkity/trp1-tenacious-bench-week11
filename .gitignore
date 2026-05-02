@@ -31,6 +31,10 @@ evaluation/ablations/held_out_traces.jsonl
 tenacious_judge_adapter/adapter_model.safetensors
 tenacious_judge_adapter/tokenizer.json
 
+tenacious_judge_adapter/
+*.safetensors
+outputs/
+ablations/
 # Report outputs — gitignored; memo.pdf lives at repo root
 reports/
 
