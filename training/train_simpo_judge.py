@@ -1,7 +1,7 @@
 """
 train_simpo_judge.py  —  SimPO LoRA training for Tenacious-Bench judge (Path B)
 
-Backbone  : unsloth/Qwen2.5-1.5B-Instruct  (1.5B dense, 16-bit LoRA on T4)
+Backbone  : unsloth/Qwen2.5-3B-Instruct  (MoE: 30B total / 3B active params)
 Method    : SimPO — reference-free preference optimisation, beta=2.0, gamma=0.5
 Data      : training_data/tenacious_judge_train_v2.jsonl  (200 preference pairs)
 Hardware  : Google Colab T4 (16 GB VRAM) — requires 4-bit loading for 30B model.
@@ -49,7 +49,7 @@ from unsloth import FastLanguageModel
 
 # ── 2. CONSTANTS ─────────────────────────────────────────────────────────────
 # Update MODEL_NAME to your pinned backbone (see training/requirements.txt).
-MODEL_NAME    = "unsloth/Qwen2.5-1.5B-Instruct"    # 1.5B dense — fits in 16-bit on T4.
+MODEL_NAME    = "unsloth/Qwen2.5-3B-Instruct"   # MoE: 30B total / 3B active params.
 DATASET_PATH  = "/content/tenacious_judge_train_v2.jsonl"
 OUTPUT_DIR    = "/content/outputs/tenacious_judge_adapter"
 
@@ -93,7 +93,7 @@ model, tokenizer = FastLanguageModel.from_pretrained(
     model_name     = MODEL_NAME,
     max_seq_length = MAX_SEQ_LEN,
     dtype          = dtype,
-    load_in_4bit   = False,   # 16-bit LoRA — 1.5B at fp16 = ~3 GB, well within T4
+    load_in_4bit   = False,   # 16-bit LoRA — 3B at fp16 = ~6 GB, fits T4 with room for optimizer
 )
 print("Model loaded.\n")
 
@@ -136,8 +136,8 @@ def _to_messages(pair: dict) -> dict:
 dataset = Dataset.from_list([_to_messages(p) for p in raw_pairs])
 
 # Sanity-check: count label balance
-reject_chosen = sum(1 for p in raw_pairs if p["chosen"].startswith("VERDICT: REJECT"))
-pass_chosen   = len(raw_pairs) - reject_chosen
+reject_chosen = sum(1 for p in raw_pairs if "VERDICT: REJECT" in p["chosen"])
+pass_chosen   = sum(1 for p in raw_pairs if "VERDICT: PASS"   in p["chosen"])
 print(f"Label balance: REJECT-chosen={reject_chosen}, PASS-chosen={pass_chosen}")
 print(f"Steps per epoch: {len(raw_pairs) // (BATCH_SIZE * GRAD_ACCUM)} "
       f"(effective batch={BATCH_SIZE * GRAD_ACCUM})\n")

@@ -46,10 +46,10 @@ sys.path.insert(0, str(ROOT / "benchmark"))
 from scoring_evaluator import score_task  # noqa: E402
 
 # ── Defaults ──────────────────────────────────────────────────────────────────
-DEFAULT_MODEL      = "unsloth/Qwen2.5-1.5B-Instruct"
+DEFAULT_MODEL      = "unsloth/Qwen2.5-3B-Instruct"
 DEFAULT_ADAPTER    = str(ROOT / "training" / "tenacious_judge_adapter")
 DEFAULT_OUTPUT_DIR = str(ROOT / "ablations")
-MAX_NEW_TOKENS     = 128
+MAX_NEW_TOKENS     = 200
 
 DIM_NAMES = {
     "D1": "grounding_fidelity",
@@ -133,28 +133,46 @@ def _parse_verdict(text: str) -> str:
     return "UNKNOWN"
 
 
+_SYSTEM_PROMPT = (
+    "You are a strict email quality judge. "
+    "You MUST start your response with exactly 'VERDICT: PASS' or 'VERDICT: REJECT' "
+    "on the first line, followed by a one-sentence reason. "
+    "Do not write anything before the word VERDICT."
+)
+
+
 def _infer(model, tokenizer, prompt: str, device: str) -> str:
-    """Single inference call; returns decoded output text (new tokens only)."""
-    messages  = [{"role": "user", "content": prompt}]
+    """Single inference call; returns decoded output text (new tokens only).
+
+    Uses a system prompt + response priming ('VERDICT: ') to force structured
+    output from small instruction-tuned models. The primer is re-attached to
+    the decoded tokens so _parse_verdict always sees 'VERDICT: PASS/REJECT'.
+    """
+    messages = [
+        {"role": "system", "content": _SYSTEM_PROMPT},
+        {"role": "user",   "content": prompt},
+    ]
     formatted = tokenizer.apply_chat_template(
         messages, tokenize=False, add_generation_prompt=True
     )
+    # Trailing space after colon prevents the model emitting an immediate EOS
+    formatted = formatted + "VERDICT: "
     inputs = tokenizer(
-        formatted, return_tensors="pt", truncation=True, max_length=1024
+        formatted, return_tensors="pt", truncation=True, max_length=2048
     ).to(device)
     with torch.no_grad():
         out = model.generate(
             **inputs,
             max_new_tokens = MAX_NEW_TOKENS,
-            max_length     = None,   # override model's default generation_config max_length
+            max_length     = None,
             do_sample      = False,
-            temperature    = None,   # suppress sampling-param warnings when do_sample=False
+            temperature    = None,
             top_p          = None,
             top_k          = None,
             pad_token_id   = tokenizer.eos_token_id,
         )
     new_ids = out[0][inputs["input_ids"].shape[1]:]
-    return tokenizer.decode(new_ids, skip_special_tokens=True).strip()
+    return ("VERDICT: " + tokenizer.decode(new_ids, skip_special_tokens=True)).strip()
 
 
 def _load_tasks(partition: str) -> list[dict]:
@@ -223,7 +241,7 @@ def _load_model_and_adapter(model_name: str, adapter_path: Path, dtype, device: 
     t0 = time.time()
     base_model = AutoModelForCausalLM.from_pretrained(
         model_name,
-        torch_dtype       = dtype,
+        dtype             = dtype,
         trust_remote_code = True,
         device_map        = "auto" if device == "cuda" else None,
     )
