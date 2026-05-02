@@ -27,6 +27,12 @@ data/tenacious_bench_v0.1/held_out/*
 !data/tenacious_bench_v0.1/held_out/.gitkeep
 evaluation/ablations/held_out_traces.jsonl
 
+# Large model weights — published to HF Hub (Birkity/tenacious-judge)
+tenacious_judge_adapter/adapter_model.safetensors
+
+# Report outputs — gitignored; memo.pdf lives at repo root
+reports/
+
 # Logs and temporary outputs
 *.log
 outputs/

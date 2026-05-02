@@ -10,7 +10,7 @@
 
 **Why this gap exists.** Standard NLP benchmarks (MMLU, HellaSwag, BIG-Bench) do not cover the narrow failure mode observed in Week 10 traces: an agent that generates grammatically clean emails with correct surface-level compliance but incorrect semantic reasoning — e.g., applying a growth-pitch frame to a decelerating signal, or claiming capability gaps that are absent from the hiring brief.
 
-**Who created it.** Birkity Mekasha, Research Partner at Tenacious Intelligence Corporation, under the 10 Academy TRP1 Week 11 challenge. No external funding. No third-party annotators.
+**Who created it.** Birkity Yishak, Research Partner at Tenacious Intelligence Corporation, under the 10 Academy TRP1 Week 11 challenge. No external funding. No third-party annotators.
 
 **Intended use.** Evaluate Path B (preference-tuned judge/critic) trained via SimPO on `unsloth/Qwen2.5-3B-Instruct`. Secondary use: benchmark regression testing for any future iteration of the outbound email generation pipeline.
 
@@ -242,7 +242,7 @@ This is v0.1. Future versions will be tagged with semantic versioning. Changes t
 
 ### 7.2 Contact
 
-Birkity Yishak — Birkity@10academy.org  
+Birkity Yishak — lily.yishak2@gmail.com  
 Research Partner, Tenacious Intelligence Corporation
 
 ### 7.3 Known Limitations
@@ -380,4 +380,4 @@ Raw model outputs: `ablations/held_out_traces.jsonl`
 
 ---
 
-*Datasheet authored 2026-04-29 by Birkity Mekasha. Updated 2026-05-02 with Act III (SimPO training) and Act IV (ablation) results. Dataset version: v0.1 — 257 tasks, four authoring modes, three partitions sealed.*
+*Datasheet authored 2026-04-29 by Birkity Yishak. Updated 2026-05-02 with Act III (SimPO training) and Act IV (ablation) results. Dataset version: v0.1 — 257 tasks, four authoring modes, three partitions sealed.*
