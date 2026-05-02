@@ -197,6 +197,82 @@ def _accuracy(preds: list[str], truths: list[str]) -> tuple[float, int, int]:
     return correct / len(pairs), correct, len(pairs)
 
 
+def _paired_bootstrap_ci(
+    preds_trained: list[str],
+    preds_base: list[str],
+    truths: list[str],
+    n_boot: int = 2000,
+    seed: int = 42,
+) -> dict:
+    """Paired bootstrap 95% CI and p-value for Delta B (trained - base accuracy).
+
+    Null hypothesis: Delta B <= 0 (trained is no better than base).
+    p_value = fraction of bootstrap iterations where resampled Delta B <= 0.
+    Each resample draws n tasks with replacement from the paired (trained, base, truth) triples.
+    """
+    import random
+    rng = random.Random(seed)
+    valid = [
+        (pt == t, pb == t)
+        for pt, pb, t in zip(preds_trained, preds_base, truths)
+        if pt not in ("UNKNOWN", "NOT_RUN") and pb not in ("UNKNOWN", "NOT_RUN")
+    ]
+    if len(valid) < 2:
+        return {
+            "observed_delta_b": None,
+            "ci_95_lower": None,
+            "ci_95_upper": None,
+            "p_value_null_delta_le_0": None,
+            "n_bootstrap": 0,
+            "n_valid_pairs": len(valid),
+        }
+    n = len(valid)
+    obs_delta = sum(ct for ct, _ in valid) / n - sum(cb for _, cb in valid) / n
+    boot_deltas: list[float] = []
+    for _ in range(n_boot):
+        sample = [valid[rng.randint(0, n - 1)] for _ in range(n)]
+        boot_deltas.append(sum(ct for ct, _ in sample) / n - sum(cb for _, cb in sample) / n)
+    boot_deltas.sort()
+    return {
+        "observed_delta_b": round(obs_delta, 4),
+        "ci_95_lower": round(boot_deltas[int(0.025 * n_boot)], 4),
+        "ci_95_upper": round(boot_deltas[int(0.975 * n_boot)], 4),
+        "p_value_null_delta_le_0": round(sum(1 for d in boot_deltas if d <= 0) / n_boot, 4),
+        "n_bootstrap": n_boot,
+        "n_valid_pairs": n,
+    }
+
+
+def _cost_pareto(task_times: list[float], cost_per_hour_gpu: float = 2.0) -> dict:
+    """Compute per-task latency and estimated cost from wall-clock times.
+
+    cost_per_hour_gpu: USD/hr for inference hardware (default $2.00/hr = Colab T4 estimate).
+    Free-tier runs have actual cost $0.00; instrumentation is preserved for cost-aware deployment.
+    """
+    if not task_times:
+        return {}
+    mean_s  = sum(task_times) / len(task_times)
+    total_s = sum(task_times)
+    return {
+        "n_tasks": len(task_times),
+        "mean_task_wall_seconds": round(mean_s, 2),
+        "total_wall_seconds": round(total_s, 1),
+        "cost_per_hour_gpu_usd": cost_per_hour_gpu,
+        "est_cost_per_task_usd": round(mean_s / 3600.0 * cost_per_hour_gpu, 6),
+        "est_total_inference_cost_usd": round(total_s / 3600.0 * cost_per_hour_gpu, 6),
+        "note": "Free Colab T4 tier: actual cost = $0.00; instrumentation preserved for deployment.",
+    }
+
+
+_DELTA_C_NOTE = {
+    "note": "Handled informationally; no tau2-Bench re-run performed.",
+    "tau2bench_scope": "retail transactional task completion under tool/API constraints",
+    "tenacious_bench_scope": "ICP-pitch alignment, signal directionality, grounding fidelity, tone, format",
+    "tau2bench_last_reported_baseline": "0.47 (Colab T4, zero-shot)",
+    "comparison_method": "informational only; tau2-Bench measures a different behavioral axis than Tenacious-Bench",
+}
+
+
 # ── Phase helpers extracted from main() to keep cognitive complexity low ──────
 
 def _run_deterministic(tasks: list[dict]) -> tuple[list[str], list[str | None], list[str]]:
