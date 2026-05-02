@@ -1,0 +1,17 @@
+# Pinned training dependencies for train_simpo_judge.py
+# Colab T4 (fp16, 16-bit LoRA, no quantisation)
+#
+# Backbone: unsloth/Qwen2.5-0.5B-Instruct
+# Update MODEL_NAME in train_simpo_judge.py to unsloth/Qwen3.5-0.8B-Instruct
+# once that checkpoint is available on HuggingFace.
+
+unsloth[colab-new]>=2025.1.1
+trl>=0.15.2
+peft>=0.12.0
+accelerate>=0.30.0
+datasets>=2.18.0
+transformers>=4.40.0
+bitsandbytes>=0.43.0
+huggingface_hub>=0.22.0
+matplotlib>=3.8.0
+torch>=2.2.0
