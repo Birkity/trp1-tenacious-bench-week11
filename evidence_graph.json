@@ -133,22 +133,85 @@
     "partitions_evaluated": ["dev", "held_out"],
     "results_file": "ablations/ablation_results.json",
     "traces_file": "ablations/held_out_traces.jsonl",
-    "note": "Copy ablation_results.json from Colab /content/ablations/ to ablations/ to populate numeric claims below.",
-    "dev_ground_truth_pass": {
-      "value": 43,
-      "source": "ablations/ablation_results.json — summary.ground_truth_dist.PASS"
+    "dev": {
+      "n_tasks": 78,
+      "ground_truth_pass": {
+        "value": 43,
+        "source": "training_running.ipynb — cell 6 output"
+      },
+      "ground_truth_reject": {
+        "value": 35,
+        "source": "training_running.ipynb — cell 6 output"
+      },
+      "base_model_accuracy": {
+        "value": 0.603,
+        "correct": 47,
+        "total": 78,
+        "source": "training_running.ipynb — cell 6 output"
+      },
+      "trained_model_accuracy": {
+        "value": 0.655,
+        "correct": 36,
+        "scored": 55,
+        "unknown_outputs": 23,
+        "note": "accuracy computed over 55 non-UNKNOWN responses",
+        "source": "training_running.ipynb — cell 6 output"
+      },
+      "delta_a_trained_vs_gt": {
+        "value": -0.345,
+        "source": "training_running.ipynb — cell 6 output"
+      },
+      "delta_b_trained_vs_base": {
+        "value": 0.052,
+        "source": "training_running.ipynb — cell 6 output"
+      }
     },
-    "dev_ground_truth_reject": {
-      "value": 35,
-      "source": "ablations/ablation_results.json — summary.ground_truth_dist.REJECT"
-    },
-    "held_out_ground_truth_pass": {
-      "value": 26,
-      "source": "ablations/ablation_results.json — summary.ground_truth_dist.PASS (partition=held_out)"
-    },
-    "held_out_ground_truth_reject": {
-      "value": 39,
-      "source": "ablations/ablation_results.json — summary.ground_truth_dist.REJECT (partition=held_out)"
+    "held_out": {
+      "n_tasks": 65,
+      "ground_truth_pass": {
+        "value": 26,
+        "source": "ablations/ablation_results.json — summary.ground_truth_dist.PASS"
+      },
+      "ground_truth_reject": {
+        "value": 39,
+        "source": "ablations/ablation_results.json — summary.ground_truth_dist.REJECT"
+      },
+      "base_model_accuracy": {
+        "value": 0.5077,
+        "correct": 33,
+        "total": 65,
+        "source": "ablations/ablation_results.json — summary.base_model"
+      },
+      "trained_model_accuracy": {
+        "value": 0.5938,
+        "correct": 19,
+        "scored": 32,
+        "unknown_outputs": 33,
+        "note": "accuracy computed over 32 non-UNKNOWN responses",
+        "source": "ablations/ablation_results.json — summary.trained_model"
+      },
+      "delta_a_trained_vs_gt": {
+        "value": -0.4063,
+        "source": "ablations/ablation_results.json — summary.delta_a_trained_vs_gt"
+      },
+      "delta_b_trained_vs_base": {
+        "value": 0.0861,
+        "source": "ablations/ablation_results.json — summary.delta_b_trained_vs_base"
+      },
+      "per_dimension_errors_base": {
+        "grounding_fidelity": 13,
+        "icp_pitch_alignment": 14,
+        "signal_directionality": 3,
+        "tone_compliance": 2,
+        "source": "ablations/ablation_results.json — per_dimension_errors.base_model"
+      },
+      "per_dimension_errors_trained": {
+        "grounding_fidelity": 8,
+        "signal_directionality": 3,
+        "tone_compliance": 2,
+        "note": "icp_pitch_alignment errors dropped to 0 vs base model's 14",
+        "source": "ablations/ablation_results.json — per_dimension_errors.trained_model"
+      }
     },
     "delta_a_description": "trained_acc - deterministic_acc (100%) — how much room the trained judge has vs perfect rules",
     "delta_b_description": "trained_acc - base_acc — lift from SimPO fine-tuning over the prompt-engineered base"
