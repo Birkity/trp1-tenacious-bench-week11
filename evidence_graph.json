@@ -1,0 +1,234 @@
+{
+  "meta": {
+    "description": "Maps every numeric claim in the Week 11 memo and README to its authoritative source file.",
+    "generated_from": "training_config.json, loss_log.json, partition counts, inter_rater_agreement.md",
+    "seed": 42
+  },
+  "dataset": {
+    "total_tasks": {
+      "value": 257,
+      "source": "data/tenacious_bench_v0.1/",
+      "derivation": "75 trace_derived + 75 programmatic + 52 adversarial_hand + 55 synthetic_semantic"
+    },
+    "train_tasks": {
+      "value": 114,
+      "source": "data/tenacious_bench_v0.1/train/tasks.jsonl",
+      "derivation": "wc -l on tasks.jsonl"
+    },
+    "dev_tasks": {
+      "value": 78,
+      "source": "data/tenacious_bench_v0.1/dev/dev_tasks.jsonl",
+      "derivation": "wc -l on dev_tasks.jsonl"
+    },
+    "held_out_tasks": {
+      "value": 65,
+      "source": "data/tenacious_bench_v0.1/held_out/held_tasks.jsonl",
+      "derivation": "wc -l on held_tasks.jsonl"
+    },
+    "partition_split": {
+      "value": "44% / 30% / 25%",
+      "source": "scripts/generation/partition.py",
+      "derivation": "seed=42 deterministic shuffle, 50/30/20 target ratio"
+    },
+    "authoring_modes": {
+      "trace_derived": 75,
+      "programmatic": 75,
+      "adversarial_hand": 52,
+      "synthetic_semantic": 55,
+      "source": "docs/datasheet.md §2.2"
+    },
+    "contamination_ngram_overlap": {
+      "value": 0,
+      "source": "data/contamination_check.json",
+      "derivation": "scripts/analysis/contamination_check.py — n=8 n-gram check"
+    },
+    "contamination_cosine_max": {
+      "value": 0.81,
+      "source": "data/contamination_check.json",
+      "derivation": "TF-IDF cosine similarity, threshold 0.85"
+    },
+    "inter_rater_min_agreement": {
+      "value": "97%",
+      "source": "docs/inter_rater_agreement.md",
+      "derivation": "30-task calibration study, all dimensions"
+    },
+    "inter_rater_min_kappa": {
+      "value": 0.92,
+      "source": "docs/inter_rater_agreement.md",
+      "derivation": "Cohen's kappa, all dimensions"
+    }
+  },
+  "training": {
+    "backbone": {
+      "value": "unsloth/Qwen2.5-3B-Instruct",
+      "source": "tenacious_judge_adapter/training_config.json"
+    },
+    "method": {
+      "value": "SimPO",
+      "source": "tenacious_judge_adapter/training_config.json"
+    },
+    "training_pairs": {
+      "value": 228,
+      "source": "training_data/tenacious_judge_act5_pairs.jsonl",
+      "derivation": "114 train tasks × 2 pairs (Pair A aggressive + Pair B subtle)"
+    },
+    "preference_pair_source": {
+      "value": "scripts/build_act5_preferences.py",
+      "source": "training_data/tenacious_judge_act5_pairs.jsonl",
+      "derivation": "Dimension-level reasoning pairs built from score_task() ground truth"
+    },
+    "lora_rank": {
+      "value": 16,
+      "source": "tenacious_judge_adapter/training_config.json"
+    },
+    "lora_alpha": {
+      "value": 16,
+      "source": "tenacious_judge_adapter/training_config.json"
+    },
+    "epochs": {
+      "value": 3,
+      "source": "tenacious_judge_adapter/training_config.json"
+    },
+    "effective_batch_size": {
+      "value": 16,
+      "source": "tenacious_judge_adapter/training_config.json",
+      "derivation": "batch_size=4 × gradient_accumulation_steps=4"
+    },
+    "learning_rate": {
+      "value": 0.0002,
+      "source": "tenacious_judge_adapter/training_config.json"
+    },
+    "simpo_beta": {
+      "value": 2.0,
+      "source": "tenacious_judge_adapter/training_config.json"
+    },
+    "simpo_gamma": {
+      "value": 0.5,
+      "source": "tenacious_judge_adapter/training_config.json",
+      "derivation": "beta × gamma_beta_ratio = 2.0 × 0.25"
+    },
+    "final_train_loss": {
+      "value": 0.0745,
+      "source": "tenacious_judge_adapter/training_config.json"
+    },
+    "wall_time_minutes": {
+      "value": 14.0,
+      "source": "tenacious_judge_adapter/training_config.json"
+    },
+    "hardware": {
+      "value": "Google Colab T4 (16 GB VRAM)",
+      "source": "training/train_simpo_judge.py"
+    },
+    "seed": {
+      "value": 42,
+      "source": "tenacious_judge_adapter/training_config.json"
+    },
+    "adapter_path": {
+      "value": "tenacious_judge_adapter/",
+      "source": "tenacious_judge_adapter/adapter_config.json"
+    }
+  },
+  "ablation": {
+    "script": "scripts/analysis/run_ablation.py",
+    "partitions_evaluated": ["dev", "held_out"],
+    "results_file": "ablations/ablation_results.json",
+    "traces_file": "ablations/held_out_traces.jsonl",
+    "dev": {
+      "n_tasks": 78,
+      "ground_truth_pass": {
+        "value": 43,
+        "source": "training_running.ipynb — cell 6 output"
+      },
+      "ground_truth_reject": {
+        "value": 35,
+        "source": "training_running.ipynb — cell 6 output"
+      },
+      "base_model_accuracy": {
+        "value": 0.603,
+        "correct": 47,
+        "total": 78,
+        "source": "training_running.ipynb — cell 6 output"
+      },
+      "trained_model_accuracy": {
+        "value": 0.655,
+        "correct": 36,
+        "scored": 55,
+        "unknown_outputs": 23,
+        "note": "accuracy computed over 55 non-UNKNOWN responses",
+        "source": "training_running.ipynb — cell 6 output"
+      },
+      "delta_a_trained_vs_gt": {
+        "value": -0.345,
+        "source": "training_running.ipynb — cell 6 output"
+      },
+      "delta_b_trained_vs_base": {
+        "value": 0.052,
+        "source": "training_running.ipynb — cell 6 output"
+      }
+    },
+    "held_out": {
+      "n_tasks": 65,
+      "ground_truth_pass": {
+        "value": 26,
+        "source": "ablations/ablation_results.json — summary.ground_truth_dist.PASS"
+      },
+      "ground_truth_reject": {
+        "value": 39,
+        "source": "ablations/ablation_results.json — summary.ground_truth_dist.REJECT"
+      },
+      "base_model_accuracy": {
+        "value": 0.5077,
+        "correct": 33,
+        "total": 65,
+        "source": "ablations/ablation_results.json — summary.base_model"
+      },
+      "trained_model_accuracy": {
+        "value": 0.5938,
+        "correct": 19,
+        "scored": 32,
+        "unknown_outputs": 33,
+        "note": "accuracy computed over 32 non-UNKNOWN responses",
+        "source": "ablations/ablation_results.json — summary.trained_model"
+      },
+      "delta_a_trained_vs_gt": {
+        "value": -0.4063,
+        "source": "ablations/ablation_results.json — summary.delta_a_trained_vs_gt"
+      },
+      "delta_b_trained_vs_base": {
+        "value": 0.0861,
+        "source": "ablations/ablation_results.json — summary.delta_b_trained_vs_base"
+      },
+      "per_dimension_errors_base": {
+        "grounding_fidelity": 13,
+        "icp_pitch_alignment": 14,
+        "signal_directionality": 3,
+        "tone_compliance": 2,
+        "source": "ablations/ablation_results.json — per_dimension_errors.base_model"
+      },
+      "per_dimension_errors_trained": {
+        "grounding_fidelity": 8,
+        "signal_directionality": 3,
+        "tone_compliance": 2,
+        "note": "icp_pitch_alignment errors dropped to 0 vs base model's 14",
+        "source": "ablations/ablation_results.json — per_dimension_errors.trained_model"
+      }
+    },
+    "delta_a_description": "trained_acc - deterministic_acc (100%) — how much room the trained judge has vs perfect rules",
+    "delta_b_description": "trained_acc - base_acc — lift from SimPO fine-tuning over the prompt-engineered base"
+  },
+  "cost": {
+    "total_api_spend_usd": {
+      "value": 0.10,
+      "source": "docs/cost_log.md"
+    },
+    "training_compute_cost_usd": {
+      "value": 0.0,
+      "source": "docs/cost_log.md",
+      "derivation": "Google Colab T4 free tier"
+    },
+    "dataset_generation_cost_usd": {
+      "value": 0.10,
+      "source": "docs/cost_log.md"
+    }
+  }
+}
